@@ -1,12 +1,12 @@
 {
-  "WPFOptimiseMyPC": {
-    "Content": "Optimise My PC",
+  "WPFOptimizeMyPC": {
+    "Content": "Optimize My PC",
     "Description": "Deletes temporary files, runs Disk Cleanup and removes old Windows Update files. Shows how much space was freed when it finishes.",
-    "category": "Optimise",
+    "category": "Optimize",
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
-    "function": "Invoke-WPFOptimiseMyPC"
+    "function": "Invoke-WPFOptimizeMyPC"
   },
   "WPFPanelDISM": {
     "Content": "Repair System Files (SFC / DISM)",

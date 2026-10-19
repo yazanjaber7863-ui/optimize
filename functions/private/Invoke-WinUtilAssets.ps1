@@ -35,7 +35,7 @@ function Invoke-WinUtilAssets {
 
   switch ($type) {
       'logo' {
-          # Optimise logo: rounded tile with a purple-to-cyan gradient, a speed arc and a lightning bolt
+          # Optimize logo: rounded tile with a purple-to-cyan gradient, a speed arc and a lightning bolt
           $brush = [System.Windows.Media.BrushConverter]::new()
 
           $tileGradient = New-Object Windows.Media.LinearGradientBrush

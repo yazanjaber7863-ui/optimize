@@ -11,7 +11,7 @@
         Height="Auto"
         MinWidth="800"
         MinHeight="600"
-        Title="Optimise">
+        Title="Optimize">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" CornerRadius="10" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -1053,7 +1053,7 @@
                 <ColumnDefinition Width="*"/> <!-- Search bar and buttons -->
             </Grid.ColumnDefinitions>
 
-            <!-- Optimise accent line under the top bar, same purple-to-cyan as the logo -->
+            <!-- Optimize accent line under the top bar, same purple-to-cyan as the logo -->
             <Border Grid.ColumnSpan="2" Height="2" VerticalAlignment="Bottom" IsHitTestVisible="False" Opacity="0.85">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -1068,7 +1068,7 @@
             <!-- Navigation Buttons Panel -->
             <StackPanel Name="NavDockPanel" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" Margin="5,5,10,5">
                 <StackPanel Name="NavLogoPanel" Orientation="Horizontal" HorizontalAlignment="Left" Background="{DynamicResource MainBackgroundColor}" SnapsToDevicePixels="True" Margin="10,0,20,0">
-                    <TextBlock Text="Optimise" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="17" FontFamily="Segoe UI Semibold" Foreground="{DynamicResource MainForegroundColor}"/>
+                    <TextBlock Text="Optimize" Margin="8,0,0,0" VerticalAlignment="Center" FontSize="17" FontFamily="Segoe UI Semibold" Foreground="{DynamicResource MainForegroundColor}"/>
                 </StackPanel>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="{DynamicResource TabButtonWidth}"
                     Background="{DynamicResource ButtonInstallBackgroundColor}" Foreground="white" FontWeight="Bold" Name="WPFTab1BT">
