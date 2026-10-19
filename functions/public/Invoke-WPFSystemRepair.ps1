@@ -82,16 +82,5 @@ function Invoke-WPFSystemRepair {
     }
 
     # Repaired system files are only picked up after a restart
-    $answer = Show-WinUtilMessage -Message "System repair finished.`n`nRestart now so Windows uses the repaired files?`n`nSave your work first. A 15-second countdown starts after you click Yes, and you can still cancel it." -Title "Restart to finish repair" -Button "YesNo" -Icon "Question"
-    $restart = "Cancel"
-    if ("$answer" -eq "Yes") {
-        $restart = Show-WinUtilRestartCountdown -Seconds 15 -Reason "System repair finished. Restarting so Windows uses the repaired files."
-    }
-
-    if ($restart -eq "Restart") {
-        Write-WinUtilLog -Component "SystemRepair" -Message "Restarting after the repair"
-        shutdown.exe /r /t 0
-    } else {
-        Write-Host "Restart later to finish applying the repair." -ForegroundColor Yellow
-    }
+    Request-WinUtilRestart -Message "System repair finished.`n`nRestart now so Windows uses the repaired files?" -Reason "System repair finished. Restarting so Windows uses the repaired files."
 }

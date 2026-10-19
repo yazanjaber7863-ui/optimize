@@ -8,6 +8,33 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFOptimizeMyPC"
   },
+  "WPFStartupApps": {
+    "Content": "Startup Apps",
+    "Description": "Shows every app that opens when Windows starts. Untick the ones you don't need for a faster boot. Nothing is uninstalled.",
+    "category": "Optimize",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFStartupApps"
+  },
+  "WPFGamingMode": {
+    "Content": "Gaming Mode",
+    "Description": "Switches to the High Performance power plan, turns on Game Mode and turns off Xbox Game Bar and background recording. Undo: pick Balanced in Settings > System > Power.",
+    "category": "Optimize",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFGamingMode"
+  },
+  "WPFDriverUpdates": {
+    "Content": "Driver Updates",
+    "Description": "Checks Windows Update for new drivers and asks before installing them, then opens NVIDIA App and Intel Driver & Support Assistant if you have them.",
+    "category": "Optimize",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFDriverUpdates"
+  },
   "WPFFixClock": {
     "Content": "Fix Clock",
     "Description": "Pick your time zone from a list, then Windows sets it and syncs the clock with internet time.",
@@ -25,6 +52,15 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFSystemRepair",
     "link": "https://winutil.christitus.com/code-reference/features/fixes/dism"
+  },
+  "WPFFixInternet": {
+    "Content": "Fix Internet",
+    "Description": "Clears the DNS cache and resets Windows network settings, for when sites won't load or the connection acts weird. Needs a restart.",
+    "category": "Repair",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFFixInternet"
   },
   "WPFFeaturesdotnet": {
     "Content": ".NET Framework (Versions 2, 3, 4) - Enable",
