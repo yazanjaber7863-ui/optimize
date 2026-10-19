@@ -8,7 +8,7 @@
 
 param (
     [string]$Config,
-    [ValidateSet("MySetup", "Advanced", "")]
+    [ValidateSet("MySetup", "Advanced", "FullSetup", "")]
     [string]$Preset,
     [switch]$Offline
 )
@@ -134,7 +134,7 @@ if ($Offline) {
 }
 
 if ($ExecutionContext.SessionState.LanguageMode -ne 'FullLanguage') {
-    Write-Host "WinUtil is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
+    Write-Host "Optimize is unable to run on your system. PowerShell execution is restricted by security policies." -ForegroundColor Red
     $global:LASTEXITCODE = 1
     if ($env:WINUTIL_HEADLESS_CHILD -eq "1" -or $script:WinUtilIsFileProcess) { exit 1 }
     return 1
@@ -178,7 +178,7 @@ if (`$launch.ScriptPath) {
 }
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "WinUtil needs to be run as Administrator. Attempting to relaunch."
+    Write-Output "Optimize needs to be run as Administrator. Attempting to relaunch."
     $elevationParameters = @{}
     foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
         $elevationParameters[$parameter.Key] = if ($parameter.Value -is [switch]) {
@@ -263,5 +263,5 @@ $sync.logPath = "$logdir\winutil_$dateTime.log"
 $sync.transcriptPath = $sync.logPath
 Start-Transcript -Path $sync.transcriptPath -Append -NoClobber | Out-Null
 
-$Host.UI.RawUI.WindowTitle = "WinUtil"
+$Host.UI.RawUI.WindowTitle = "Optimize"
 Clear-Host
