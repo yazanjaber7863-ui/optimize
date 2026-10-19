@@ -38,6 +38,13 @@ function Invoke-WPFSystemRepair {
         }
     )
 
+    $answer = Show-WinUtilMessage -Message "Heads up: this repair takes a LONG time.`n`nIt checks the disk, scans every Windows system file, then downloads and compares clean copies from Windows Update. Expect 20-60 minutes, and DISM often looks stuck around 60% for a while. That's normal.`n`nYou can keep using the PC, but don't close Optimize until it finishes.`n`nStart the repair now?" -Title "This will take a while" -Button "YesNo" -Icon "Warning"
+    if ("$answer" -ne "Yes") {
+        Write-Host "System repair cancelled." -ForegroundColor Yellow
+        Write-WinUtilLog -Component "SystemRepair" -Message "User cancelled the repair at the time warning"
+        return
+    }
+
     $completed = 0
     foreach ($step in $steps) {
         Step-WinUtilJob -Status "$($step.Label) ($($completed + 1)/$($steps.Count))" -Percent ([int](($completed / $steps.Count) * 100))
