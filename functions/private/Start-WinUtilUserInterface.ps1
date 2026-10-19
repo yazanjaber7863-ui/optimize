@@ -209,6 +209,7 @@ function Start-WinUtilUserInterface {
             $keyEventArgs = $_
             switch ($_.SystemKey) {
                 "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab and suppress Windows Warning Sound
+                "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
             }
         }
         # Handle Ctrl key combinations for specific actions
