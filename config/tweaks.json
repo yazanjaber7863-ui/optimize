@@ -1,6 +1,6 @@
 {
   "WPFTweaksActivity": {
-    "Content": "Activity History - Disable",
+    "Content": "⭐ Activity History - Disable",
     "Description": "Stops Windows from publishing or uploading user activities while preserving clipboard history.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -106,7 +106,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablestoresearch"
   },
   "WPFTweaksLocation": {
-    "Content": "Location Tracking - Disable",
+    "Content": "⭐ Location Tracking - Disable",
     "Description": "Disables Location Tracking.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -427,7 +427,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/edgedebloat"
   },
   "WPFTweaksTelemetry": {
-    "Content": "Telemetry - Disable",
+    "Content": "⭐ Telemetry - Disable",
     "Description": "Disables Microsoft Telemetry.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -553,7 +553,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/telemetry"
   },
   "WPFTweaksDeliveryOptimization": {
-    "Content": "Delivery Optimization - Disable",
+    "Content": "⭐ Delivery Optimization - Disable",
     "Description": "Stops Windows from using your bandwidth to upload updates to other PCs on the internet or local network.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -831,7 +831,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/reservedstorage"
   },
   "WPFTweaksRestorePoint": {
-    "Content": "Restore Point - Create",
+    "Content": "⭐ Restore Point - Create",
     "Description": "Creates a restore point at runtime in case a revert is needed from WinUtil modifications.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -858,7 +858,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/restorepoint"
   },
   "WPFTweaksEndTaskOnTaskbar": {
-    "Content": "End Task With Right Click - Enable",
+    "Content": "⭐ End Task With Right Click - Enable",
     "Description": "Enables option to end task when right-clicking a program in the taskbar.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -934,7 +934,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/windowsai"
   },
   "WPFTweaksWPBT": {
-    "Content": "Windows Platform Binary Table (WPBT) - Disable",
+    "Content": "⭐ Windows Platform Binary Table (WPBT) - Disable",
     "Description": "If enabled, WPBT allows your computer vendor to execute programs at boot time, such as anti-theft software, software drivers, as well as force install software without user consent. Poses potential security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -950,7 +950,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/wpbt"
   },
   "WPFTweaksPreventDeviceMetadataFromNetwork": {
-    "Content": "Prevent Device Companion Apps",
+    "Content": "⭐ Prevent Device Companion Apps",
     "Description": "Prevents additional software from being installed when plugging in devices (e.g. Ads when plugging in a monitor). Poses potential security risk.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -1120,7 +1120,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/diskcleanup"
   },
   "WPFTweaksDeleteTempFiles": {
-    "Content": "Temporary Files - Remove",
+    "Content": "⭐ Temporary Files - Remove",
     "Description": "Erases TEMP Folders.",
     "category": "Essential Tweaks",
     "panel": "1",
@@ -1326,7 +1326,7 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/darkmode"
   },
   "WPFToggleShowExt": {
-    "Content": "File Explorer File Extensions",
+    "Content": "⭐ File Explorer File Extensions",
     "Description": "Shows .file extensions in Explorer (.exe, .png, etc.)",
     "category": "Customize Preferences",
     "panel": "2",
