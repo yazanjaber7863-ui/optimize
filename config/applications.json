@@ -161,6 +161,42 @@
         "winget": "RevoUninstaller.RevoUninstaller",
         "foss": false
     },
+    "hpapp": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "HP App (myHP)",
+        "description": "HP's app for HP PCs: device info, support, warranty, audio and display settings.",
+        "link": "https://apps.microsoft.com/detail/9N9PHDT62W94",
+        "winget": "msstore:9N9PHDT62W94",
+        "foss": false
+    },
+    "inteldsa": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Intel Driver & Support Assistant",
+        "description": "Finds and installs the latest Intel drivers, including chipset, Wi-Fi and Bluetooth.",
+        "link": "https://www.intel.com/content/www/us/en/support/intel-driver-support-assistant.html",
+        "winget": "Intel.IntelDriverAndSupportAssistant",
+        "foss": false
+    },
+    "medal": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Medal",
+        "description": "Records and clips gameplay, then edits and shares the clips.",
+        "link": "https://medal.tv/",
+        "winget": "MedalB.V.Medal",
+        "foss": false
+    },
+    "nvidiaapp": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "NVIDIA App",
+        "description": "NVIDIA's app for GeForce drivers, game settings, recording and overlays (replaces GeForce Experience).",
+        "link": "https://www.nvidia.com/en-us/software/nvidia-app/",
+        "winget": "msstore:XP8CLZL93F5Z4P",
+        "foss": false
+    },
     "logitechghub": {
         "category": "Utilities",
         "choco": "na",
