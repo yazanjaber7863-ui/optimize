@@ -8,6 +8,15 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFOptimizeMyPC"
   },
+  "WPFFixClock": {
+    "Content": "Fix Clock",
+    "Description": "Pick your time zone from a list, then Windows sets it and syncs the clock with internet time.",
+    "category": "Optimize",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFFixClock"
+  },
   "WPFPanelDISM": {
     "Content": "Repair System Files (SFC / DISM)",
     "category": "Repair",
