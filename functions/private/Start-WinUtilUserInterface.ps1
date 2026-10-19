@@ -44,7 +44,7 @@ function Start-WinUtilUserInterface {
 
     if (-NOT ($readerOperationSuccessful)) {
         Write-Host "Failed to parse xaml content using Windows.Markup.XamlReader's Load Method." -ForegroundColor Red
-        Write-Host "Quitting WinUtil..." -ForegroundColor Red
+        Write-Host "Quitting Optimize..." -ForegroundColor Red
         Write-WinUtilLog -Level "ERROR" -Component "UI" -Message "Failed to parse the XAML content. WinUtil cannot start."
         throw [System.InvalidOperationException]::new("Failed to parse the XAML content. WinUtil cannot start.", $readerFailure.Exception)
     }
@@ -420,11 +420,13 @@ function Start-WinUtilUserInterface {
         Invoke-WPFPopup -Action "Hide" -Popups @("Settings")
 
         $authorInfo = @"
-Author   : <a href="https://github.com/ChrisTitusTech">@ChrisTitusTech</a>
+Optimize : your own Windows setup and cleanup tool
+GitHub   : <a href="https://github.com/yazanjaber7863-ui/optimize">yazanjaber7863-ui/optimize</a>
+Version  : $($sync.version)
+
+Based on <a href="https://github.com/ChrisTitusTech/winutil">WinUtil</a> by <a href="https://github.com/ChrisTitusTech">@ChrisTitusTech</a> (MIT license)
 UI       : <a href="https://github.com/MyDrift-user">@MyDrift-user</a>, <a href="https://github.com/Marterich">@Marterich</a>
 Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a href="https://github.com/Marterich">@Marterich</a>
-GitHub   : <a href="https://github.com/ChrisTitusTech/winutil">ChrisTitusTech/winutil</a>
-Version  : <a href="https://github.com/ChrisTitusTech/winutil/releases/tag/$($sync.version)">$($sync.version)</a>
 "@
         Show-CustomDialog -Title "About" -Message $authorInfo
     })

@@ -128,7 +128,7 @@ function Write-WinUtilAutoRunSummary {
     )
 
     Write-Host ""
-    Write-Host "=== WinUtil headless run ===" -ForegroundColor Cyan
+    Write-Host "=== Optimize results ===" -ForegroundColor Cyan
 
     foreach ($step in @($Summary.Steps)) {
         $state = if ($step.TimedOut) { "TIMED OUT" } elseif ($step.Errors -gt 0) { "$($step.Errors) error(s)" } elseif ($step.Warnings -gt 0) { "$($step.Warnings) warning(s)" } else { "ok" }

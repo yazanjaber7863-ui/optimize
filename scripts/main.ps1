@@ -78,7 +78,7 @@ if ($Preset -or $Config) {
         $headlessCode = Write-WinUtilAutoRunSummary -Summary $summary
     } catch {
         Write-WinUtilErrorRecord -ErrorRecord $_ -Component "AutoRun" -Context "Headless run"
-        Write-Host "WinUtil could not complete the headless run: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Optimize could not complete the run: $($_.Exception.Message)" -ForegroundColor Red
         $headlessCode = 1
     } finally {
         Close-WinUtilRunspacePool

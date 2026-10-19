@@ -34,7 +34,7 @@ stopped and everything closes now. Cancel keeps WinUtil open.
             $sync.ForceClose = $true
 
             Write-Host ""
-            Write-Host "WinUtil's window is closed. $RunningJob is still running here, and this window will close when it finishes." -ForegroundColor Cyan
+            Write-Host "Optimize's window is closed. $RunningJob is still running here, and this window will close when it finishes." -ForegroundColor Cyan
             Write-Host ""
 
             # Posted rather than closed from inside the handler that is already unwinding

@@ -13,7 +13,7 @@ function Show-WinUtilMessage {
     #>
     param (
         [string]$Message,
-        [string]$Title = "Winutil",
+        [string]$Title = "Optimize",
         $Button = "OK",
         $Icon = "Information"
     )

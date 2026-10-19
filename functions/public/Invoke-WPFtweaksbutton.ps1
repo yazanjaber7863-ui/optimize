@@ -13,7 +13,7 @@ function Invoke-WPFtweaksbutton {
   }
 
   if ($Tweaks.count -eq 0 -and $dnsProvider -eq "Default") {
-    Show-WinUtilMessage -Message "Please check the tweaks you wish to perform." -Title "WinUtil" -Button "OK" -Icon "Warning"
+    Show-WinUtilMessage -Message "Please check the tweaks you wish to perform." -Title "Optimize" -Button "OK" -Icon "Warning"
     return
   }
 
