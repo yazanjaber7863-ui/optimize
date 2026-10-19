@@ -5,16 +5,28 @@ function Invoke-WPFSystemRepair {
         Checks for disk failure using Chkdsk
 
     .DESCRIPTION
+        The user picks which steps to run. They always run in this order:
         1. Chkdsk - Checks for disk errors, which can cause system file corruption and notifies of early disk failure
-        2. SFC - scans protected system files for corruption and fixes them
-        3. DISM - Repair a corrupted Windows operating system image
+        2. DISM - Repair a corrupted Windows operating system image
+        3. SFC - scans protected system files for corruption and fixes them. Runs after DISM
+           because SFC repairs files from the component store that DISM has just fixed.
     #>
+
+    $chosen = Show-WinUtilRepairPicker
+    if (-not $chosen) {
+        Write-Host "System repair cancelled." -ForegroundColor Yellow
+        Write-WinUtilLog -Component "SystemRepair" -Message "User cancelled the repair picker"
+        return
+    }
+    $chosen = $chosen -split ","
+    Write-WinUtilLog -Component "SystemRepair" -Message "Running: $($chosen -join ', ')"
 
     # SuccessCodes maps the non-zero exits a step treats as success to what they mean. The codes
     # are per step because the same number means different things: 1 and 2 are ordinary chkdsk
     # outcomes, while 1 from sfc is a failure, and 3010 is a repaired image from DISM only.
-    $steps = @(
+    $allSteps = @(
         @{
+            Key = "Disk"
             Label = "Checking the disk for errors"
             Arguments = "/c chkdsk /scan /perf"
             # 3 is left out: the disk could not be checked, or has errors an online scan cannot
@@ -25,25 +37,21 @@ function Invoke-WPFSystemRepair {
             }
         },
         @{
-            Label = "Scanning protected system files"
-            Arguments = "/c sfc /scannow"
-            SuccessCodes = @{}
-        },
-        @{
+            Key = "DISM"
             Label = "Repairing the Windows image"
             Arguments = "/c dism /online /cleanup-image /restorehealth"
             SuccessCodes = @{
                 3010 = "a restart is needed for the repair to take effect"
             }
+        },
+        @{
+            Key = "SFC"
+            Label = "Scanning protected system files"
+            Arguments = "/c sfc /scannow"
+            SuccessCodes = @{}
         }
     )
-
-    $answer = Show-WinUtilMessage -Message "Heads up: this repair takes a LONG time.`n`nIt checks the disk, scans every Windows system file, then downloads and compares clean copies from Windows Update. Expect 20-60 minutes, and DISM often looks stuck around 60% for a while. That's normal.`n`nYou can keep using the PC, but don't close Optimize until it finishes.`n`nStart the repair now?" -Title "This will take a while" -Button "YesNo" -Icon "Warning"
-    if ("$answer" -ne "Yes") {
-        Write-Host "System repair cancelled." -ForegroundColor Yellow
-        Write-WinUtilLog -Component "SystemRepair" -Message "User cancelled the repair at the time warning"
-        return
-    }
+    $steps = @($allSteps | Where-Object { $chosen -contains $_.Key })
 
     $completed = 0
     foreach ($step in $steps) {
@@ -65,6 +73,12 @@ function Invoke-WPFSystemRepair {
         }
 
         $completed++
+    }
+
+    # A disk check alone repairs nothing that needs a restart
+    if (-not ($chosen -contains "DISM" -or $chosen -contains "SFC")) {
+        Write-Host "Disk check finished." -ForegroundColor Green
+        return
     }
 
     # Repaired system files are only picked up after a restart
