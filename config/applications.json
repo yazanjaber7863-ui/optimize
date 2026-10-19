@@ -1573,6 +1573,15 @@
         "winget": "Starship.Starship",
         "foss": true
     },
+    "logitechghub": {
+        "category": "Utilities",
+        "choco": "na",
+        "content": "Logitech G HUB",
+        "description": "Logitech G HUB is the software for configuring Logitech gaming mice, keyboards, headsets and other G series devices.",
+        "link": "https://www.logitechg.com/innovation/g-hub.html",
+        "winget": "Logitech.GHUB",
+        "foss": false
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
