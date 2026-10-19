@@ -1,7 +1,6 @@
 {
   "Standard": [
     "WPFTweaksActivity",
-    "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
     "WPFTweaksLocation",
@@ -14,7 +13,6 @@
     "WPFTweaksRestorePoint"
   ],
   "Minimal": [
-    "WPFTweaksConsumerFeatures",
     "WPFTweaksWPBT",
     "WPFTweaksServices",
     "WPFTweaksTelemetry"
@@ -22,7 +20,6 @@
   "Advanced": [
     "WPFTweaksRestorePoint",
     "WPFTweaksActivity",
-    "WPFTweaksConsumerFeatures",
     "WPFTweaksDisableExplorerAutoDiscovery",
     "WPFTweaksWPBT",
     "WPFTweaksLocation",
@@ -32,7 +29,6 @@
     "WPFTweaksDeleteTempFiles",
     "WPFTweaksEndTaskOnTaskbar",
     "WPFTweaksDisableStoreSearch",
-    "WPFTweaksRevertStartMenu",
     "WPFTweaksWidget",
     "WPFTweaksRemoveOneDrive",
     "WPFTweaksWindowsAI",

@@ -77,32 +77,31 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/widget"
   },
- "WPFTweaksRevertStartMenu": {
-    "Content": "Start Menu Previous Layout - Enable",
-    "Description": "Bring back the old Start Menu layout from before the gradual rollout of the new one in 25H2. On newer versions of Windows !!THIS TWEAK WILL NOT WORK!!",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\ControlSet001\\Control\\FeatureManagement\\Overrides\\8\\3036241548",
-        "Name": "EnabledState",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/revertstartmenu"
-  },
   "WPFTweaksDisableStoreSearch": {
     "Content": "Microsoft Store Recommended Search Results - Disable",
     "Description": "Will not display recommended Microsoft Store apps when searching for apps in the Start menu.",
     "category": "Essential Tweaks",
     "panel": "1",
     "InvokeScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /deny *S-1-1-0:F"
+      "
+      $StoreDb = \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\"
+
+      # store.db only exists after the Microsoft Store has been opened once
+      if (Test-Path $StoreDb) {
+          icacls $StoreDb /deny *S-1-1-0:F
+      } else {
+          Write-Host \"Microsoft Store database not found (open the Store once, then run this again) - skipped\"
+      }
+      "
     ],
     "UndoScript": [
-      "icacls \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\" /grant *S-1-1-0:F"
+      "
+      $StoreDb = \"$Env:LocalAppData\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db\"
+
+      if (Test-Path $StoreDb) {
+          icacls $StoreDb /grant *S-1-1-0:F
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablestoresearch"
   },
@@ -427,22 +426,6 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/edgedebloat"
   },
-  "WPFTweaksConsumerFeatures": {
-    "Content": "ConsumerFeatures - Disable",
-    "Description": "Stops promoted app installs and reduces app suggestions from Microsoft Store content.",
-    "category": "Essential Tweaks",
-    "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "Name": "DisableWindowsConsumerFeatures",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/consumerfeatures"
-  },
   "WPFTweaksTelemetry": {
     "Content": "Telemetry - Disable",
     "Description": "Disables Microsoft Telemetry.",
@@ -542,8 +525,8 @@
       # Disable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Disabled
 
-      # Disable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Disabled
+      # Disable (Windows Error Reporting) Service
+      Set-Service -Name WerSvc -StartupType Disabled
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
@@ -559,8 +542,8 @@
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
 
-      # Enable (Windows Error Reporting Manager) Service
-      Set-Service -Name wermgr -StartupType Automatic
+      # Enable (Windows Error Reporting) Service
+      Set-Service -Name WerSvc -StartupType Manual
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
@@ -619,7 +602,15 @@
       "Disable-BitLocker -MountPoint $Env:SystemDrive"
     ],
     "UndoScript": [
-      "Enable-BitLocker -MountPoint $Env:SystemDrive"
+      "
+      # Home editions only have Device Encryption, which can't be turned on from PowerShell
+      if ((Get-CimInstance Win32_OperatingSystem).Caption -match 'Home') {
+          Write-Host \"Turn encryption back on in Settings > Privacy & security > Device encryption\"
+      } else {
+          Enable-BitLocker -MountPoint $Env:SystemDrive -RecoveryPasswordProtector -UsedSpaceOnly
+          Write-Host \"BitLocker enabled - back up the recovery key shown above\"
+      }
+      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disablebitlocker"
   },
@@ -646,11 +637,24 @@
     "panel": "1",
     "InvokeScript": [
       "
+      # OneDriveSetup.exe lives in different places depending on Windows version and install type
+      $Setup = @(
+          \"$Env:SystemRoot\\System32\\OneDriveSetup.exe\",
+          \"$Env:SystemRoot\\SysWOW64\\OneDriveSetup.exe\",
+          \"$Env:LocalAppData\\Microsoft\\OneDrive\\*\\OneDriveSetup.exe\",
+          \"$Env:ProgramFiles\\Microsoft OneDrive\\*\\OneDriveSetup.exe\"
+      ) | ForEach-Object { Get-Item $_ -ErrorAction SilentlyContinue } | Select-Object -First 1
+
+      if (-not $Setup) {
+          Write-Host \"OneDrive uninstaller not found - OneDrive is probably not installed\"
+          return
+      }
+
       # Deny permission to remove OneDrive folder
-      icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\"
+      if ($Env:OneDrive) { icacls $Env:OneDrive /deny \"*S-1-5-32-544:(D,DC)\" }
 
       Write-Host \"Uninstalling OneDrive...\"
-      Start-Process -FilePath (Join-Path $Env:SystemRoot \"System32\\OneDriveSetup.exe\") -ArgumentList '/uninstall' -Wait
+      Start-Process -FilePath $Setup.FullName -ArgumentList '/uninstall' -Wait
 
       # Some of OneDrive files use explorer, and OneDrive uses FileCoAuth
       Write-Host \"Removing leftover OneDrive Files...\"
@@ -661,9 +665,9 @@
       Remove-Item \"$Env:ProgramData\\Microsoft OneDrive\" -Recurse -Force
 
       # Grant back permission to access OneDrive folder
-      icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\"
+      if ($Env:OneDrive) { icacls $Env:OneDrive /grant \"*S-1-5-32-544:(D,DC)\" }
 
-      if (-not (Get-ChildItem -Path $Env:OneDrive)) {
+      if ($Env:OneDrive -and (Test-Path $Env:OneDrive) -and -not (Get-ChildItem -Path $Env:OneDrive)) {
           Remove-Item -Path $Env:OneDrive -Recurse
           [Environment]::SetEnvironmentVariable('OneDrive', $null, 'User')
       }
@@ -1191,16 +1195,16 @@
   },
   "WPFTweaksDisableBGapps": {
     "Content": "Background Apps - Disable",
-    "Description": "Disables all Microsoft Store apps from running in the background, which has to be done individually since Windows 11.",
+    "Description": "Disables all Microsoft Store apps from running in the background, using the policy Windows 11 still respects.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
-        "Name": "GlobalUserDisabled",
-        "Value": "1",
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "Name": "LetAppsRunInBackground",
+        "Value": "2",
         "Type": "DWord",
-        "OriginalValue": "0"
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disablebgapps"
@@ -1259,32 +1263,6 @@
       "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/disableexplorerautodiscovery"
-  },
-  "WPFToggleDetailedBSoD": {
-    "Content": "BSoD Verbose Mode",
-    "Description": "Gives more information when you blue screen.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
-        "Name": "DisplayParameters",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      },
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\CrashControl",
-        "Name": "DisableEmoticon",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/detailedbsod"
   },
   "WPFToggleBatteryPercentage": {
     "Content": "System Tray Battery Percentage",
@@ -1596,42 +1574,6 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/windowsnapping"
   },
-  "WPFToggleStandbyFix": {
-    "Content": "S0 Sleep Network Connectivity",
-    "Description": "Toggles network connectivity during S0 Sleep which is low power idle in modern laptops.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
-        "Name": "ACSettingIndex",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0",
-        "DefaultState": "true"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/standbyfix"
-  },
-  "WPFToggleS3Sleep": {
-    "Content": "S3 Sleep",
-    "Description": "Toggles between Modern Standby and S3 Sleep, which cuts off power to the CPU while continuing to refresh the memory.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Power",
-        "Name": "PlatformAoAcOverride",
-        "Value": "0",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>",
-        "DefaultState": "false"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/s3sleep"
-  },
   "WPFToggleHideSettingsHome": {
     "Content": "Settings Home Page",
     "Description": "Toggles the Home Page in the Windows Settings app.",
@@ -1652,17 +1594,17 @@
   },
   "WPFToggleBingSearch": {
     "Content": "Start Menu Bing Search",
-    "Description": "Toggles Bing web search results in Windows Search.",
+    "Description": "Toggles Bing web search results in Windows Search. Takes effect after signing out or restarting Explorer.",
     "category": "Customize Preferences",
     "panel": "2",
     "Type": "Toggle",
     "registry": [
       {
-        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "Name": "BingSearchEnabled",
-        "Value": "1",
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "Name": "DisableSearchBoxSuggestions",
+        "Value": "0",
         "Type": "DWord",
-        "OriginalValue": "0",
+        "OriginalValue": "1",
         "DefaultState": "true"
       }
     ],
@@ -1685,23 +1627,6 @@
       }
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/loginblur"
-  },
-  "WPFToggleDisableLockscreen": {
-    "Content": "Lock Screen - Disable",
-    "Description": "Skips the lock screen entirely and goes directly to the sign-in screen on boot and wake.",
-    "category": "Customize Preferences",
-    "panel": "2",
-    "Type": "Toggle",
-    "registry": [
-      {
-        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization",
-        "Name": "NoLockScreen",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "<RemoveEntry>"
-      }
-    ],
-    "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/disablelockscreen"
   },
   "WPFToggleStartMenuRecommendations": {
     "Content": "Start Menu Recommendations",
