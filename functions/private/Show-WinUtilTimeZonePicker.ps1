@@ -48,14 +48,24 @@ function Show-WinUtilTimeZonePicker {
         $panel.Children.Add($hint) | Out-Null
 
         $combo = New-Object Windows.Controls.ComboBox
+        # This window is not inside the main one, so the themed ComboBox style and the colours
+        # it refers to are handed over explicitly, otherwise the list draws white
+        $combo.Resources.MergedDictionaries.Add($resources)
+        $combo.Style = $resources[[Windows.Controls.ComboBox]]
         $combo.Height = 30
         $combo.FontSize = 13
         $combo.IsTextSearchEnabled = $true
-        $combo.DisplayMemberPath = "DisplayName"
+        $combo.MaxDropDownHeight = 360
         $zones = [TimeZoneInfo]::GetSystemTimeZones() | Sort-Object { $_.BaseUtcOffset }, DisplayName
-        foreach ($zone in $zones) { $combo.Items.Add($zone) | Out-Null }
         $current = [TimeZoneInfo]::Local.Id
-        $combo.SelectedItem = $zones | Where-Object { $_.Id -eq $current } | Select-Object -First 1
+        foreach ($zone in $zones) {
+            # Items are text so the themed template can show them; the zone rides along on Tag
+            $item = New-Object Windows.Controls.ComboBoxItem
+            $item.Content = $zone.DisplayName
+            $item.Tag = $zone
+            $combo.Items.Add($item) | Out-Null
+            if ($zone.Id -eq $current) { $combo.SelectedItem = $item }
+        }
         $panel.Children.Add($combo) | Out-Null
 
         $preview = New-Object Windows.Controls.TextBlock
@@ -107,7 +117,7 @@ function Show-WinUtilTimeZonePicker {
             param($eventSender)
             $owner = [Windows.Window]::GetWindow($eventSender)
             if ($null -eq $owner) { return }
-            $zone = $owner.Resources["ZoneCombo"].SelectedItem
+            $zone = $owner.Resources["ZoneCombo"].SelectedItem.Tag
             if ($zone) {
                 $now = [TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $zone)
                 $owner.Resources["ZonePreview"].Text = $now.ToString("HH:mm:ss  ddd d MMM")
@@ -118,7 +128,7 @@ function Show-WinUtilTimeZonePicker {
         $applyButton.Add_Click({
             param($eventSender)
             $owner = [Windows.Window]::GetWindow($eventSender)
-            $owner.Tag = $owner.Resources["ZoneCombo"].SelectedItem.Id
+            $owner.Tag = $owner.Resources["ZoneCombo"].SelectedItem.Tag.Id
             $owner.Close()
         })
 
@@ -128,7 +138,7 @@ function Show-WinUtilTimeZonePicker {
         $timer.Add_Tick({
             param($eventSender)
             $state = ([System.Windows.Threading.DispatcherTimer]$eventSender).Tag
-            $zone = $state.Combo.SelectedItem
+            $zone = $state.Combo.SelectedItem.Tag
             if ($zone) {
                 $now = [TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $zone)
                 $state.Preview.Text = $now.ToString("HH:mm:ss  ddd d MMM")
@@ -143,7 +153,7 @@ function Show-WinUtilTimeZonePicker {
         $window.Add_Loaded({
             param($eventSender)
             $owner = [Windows.Window]$eventSender
-            $zone = $owner.Resources["ZoneCombo"].SelectedItem
+            $zone = $owner.Resources["ZoneCombo"].SelectedItem.Tag
             if ($zone) {
                 $now = [TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $zone)
                 $owner.Resources["ZonePreview"].Text = $now.ToString("HH:mm:ss  ddd d MMM")
