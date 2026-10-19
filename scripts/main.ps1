@@ -1,24 +1,13 @@
 Write-Host @"
-    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
- CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T
-C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C       CCCCCC        T:::::T                T:::::T
-C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT
-CC:::::::::::::::C       T:::::::::T            T:::::::::T
-CCC::::::::::::C         T:::::::::T            T:::::::::T
-  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT
 
-====Chris Titus Tech=====
-=====Windows Toolbox=====
-"@
+  ___   ____   _____  ___  __  __  ___  ____   _____
+ / _ \ |  _ \ |_   _||_ _||  \/  ||_ _|/ ___| | ____|
+| | | || |_) |  | |   | | | |\/| | | | \___ \ |  _|
+| |_| ||  __/   | |   | | | |  | | | |  ___) || |___
+ \___/ |_|      |_|  |___||_|  |_||___||____/ |_____|
+"@ -ForegroundColor Cyan
+Write-Host "  Personal Windows setup toolbox" -ForegroundColor White
+Write-Host "  based on WinUtil by Chris Titus Tech (MIT)`n" -ForegroundColor DarkGray
 
 # Load the configuration files
 
