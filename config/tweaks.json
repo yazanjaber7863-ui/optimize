@@ -428,7 +428,7 @@
   },
   "WPFTweaksTelemetry": {
     "Content": "⭐ Telemetry - Disable",
-    "Description": "Disables Microsoft Telemetry.",
+    "Description": "Turns off as much Microsoft data collection as Windows allows: diagnostic data set to the lowest level (fully off on Education/Enterprise, Required-only on Home/Pro), the telemetry services and scheduled tasks, error reporting, ad ID, typing/inking collection, activity history and Microsoft's suggested-app installs. Windows Update, the Store and Defender keep working.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -515,6 +515,139 @@
         "Value": "0",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "AllowTelemetry",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "DoNotShowFeedbackNotifications",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "LimitDiagnosticLogCollection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "LimitDumpCollection",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "AllowDeviceNameInTelemetry",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "Name": "DisableOneSettingsDownloads",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "DisableWindowsConsumerFeatures",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "DisableSoftLanding",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "DisableCloudOptimizedContent",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\CloudContent",
+        "Name": "DisableTailoredExperiencesWithDiagnosticData",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "Name": "DisabledByGroupPolicy",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat",
+        "Name": "AITEnable",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat",
+        "Name": "DisableInventory",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting",
+        "Name": "Disabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows",
+        "Name": "CEIPEnable",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\TabletPC",
+        "Name": "PreventHandwritingDataSharing",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\HandwritingErrorReports",
+        "Name": "PreventHandwritingErrorReports",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "EnableActivityFeed",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "Name": "UploadUserActivities",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
       }
     ],
     "InvokeScript": [
@@ -523,10 +656,32 @@
       Set-MpPreference -SubmitSamplesConsent 2
 
       # Disable (Connected User Experiences and Telemetry) Service
+      Stop-Service -Name diagtrack -Force -ErrorAction SilentlyContinue
       Set-Service -Name diagtrack -StartupType Disabled
+
+      # Disable (Device Management WAP Push) Service, which forwards telemetry routing messages
+      Stop-Service -Name dmwappushservice -Force -ErrorAction SilentlyContinue
+      Set-Service -Name dmwappushservice -StartupType Disabled
 
       # Disable (Windows Error Reporting) Service
       Set-Service -Name WerSvc -StartupType Disabled
+
+      # Disable the scheduled tasks that collect and upload usage data
+      $telemetryTasks = @(
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'Microsoft Compatibility Appraiser' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'Microsoft Compatibility Appraiser Exp' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'ProgramDataUpdater' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'MareBackup' }
+        @{ Path = '\\Microsoft\\Windows\\Customer Experience Improvement Program\\'; Name = 'Consolidator' }
+        @{ Path = '\\Microsoft\\Windows\\Customer Experience Improvement Program\\'; Name = 'UsbCeip' }
+        @{ Path = '\\Microsoft\\Windows\\Feedback\\Siuf\\'; Name = 'DmClient' }
+        @{ Path = '\\Microsoft\\Windows\\Feedback\\Siuf\\'; Name = 'DmClientOnScenarioDownload' }
+        @{ Path = '\\Microsoft\\Windows\\Windows Error Reporting\\'; Name = 'QueueReporting' }
+      )
+      foreach ($task in $telemetryTasks) {
+        # Not every task exists on every Windows build
+        Disable-ScheduledTask -TaskPath $task.Path -TaskName $task.Name -ErrorAction SilentlyContinue | Out-Null
+      }
 
       # Disable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '1', 'Machine')
@@ -543,8 +698,27 @@
       # Enable (Connected User Experiences and Telemetry) Service
       Set-Service -Name diagtrack -StartupType Automatic
 
+      # Enable (Device Management WAP Push) Service
+      Set-Service -Name dmwappushservice -StartupType Manual
+
       # Enable (Windows Error Reporting) Service
       Set-Service -Name WerSvc -StartupType Manual
+
+      # Enable the usage data scheduled tasks
+      $telemetryTasks = @(
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'Microsoft Compatibility Appraiser' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'Microsoft Compatibility Appraiser Exp' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'ProgramDataUpdater' }
+        @{ Path = '\\Microsoft\\Windows\\Application Experience\\'; Name = 'MareBackup' }
+        @{ Path = '\\Microsoft\\Windows\\Customer Experience Improvement Program\\'; Name = 'Consolidator' }
+        @{ Path = '\\Microsoft\\Windows\\Customer Experience Improvement Program\\'; Name = 'UsbCeip' }
+        @{ Path = '\\Microsoft\\Windows\\Feedback\\Siuf\\'; Name = 'DmClient' }
+        @{ Path = '\\Microsoft\\Windows\\Feedback\\Siuf\\'; Name = 'DmClientOnScenarioDownload' }
+        @{ Path = '\\Microsoft\\Windows\\Windows Error Reporting\\'; Name = 'QueueReporting' }
+      )
+      foreach ($task in $telemetryTasks) {
+        Enable-ScheduledTask -TaskPath $task.Path -TaskName $task.Name -ErrorAction SilentlyContinue | Out-Null
+      }
 
       # Enable PowerShell 7 telemetry
       [Environment]::SetEnvironmentVariable('POWERSHELL_TELEMETRY_OPTOUT', '', 'Machine')
