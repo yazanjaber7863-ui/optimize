@@ -1957,6 +1957,60 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/gamemode"
   },
+  "WPFToggleHAGS": {
+    "tab": "Gaming",
+    "Content": "Hardware-accelerated GPU Scheduling",
+    "Description": "Lets the graphics card manage its own memory, which can lower input lag and raise FPS on newer GPUs. Takes effect after a restart.",
+    "category": "Performance",
+    "panel": "0",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+        "Name": "HwSchMode",
+        "Value": "2",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://devblogs.microsoft.com/directx/hardware-accelerated-gpu-scheduling/"
+  },
+  "WPFToggleXboxGameBar": {
+    "tab": "Gaming",
+    "Content": "Xbox Game Bar",
+    "Description": "The Win+G overlay and background game recording. Turning it off stops the recording running in the background while you play.",
+    "category": "Performance",
+    "panel": "0",
+    "Type": "Toggle",
+    "registry": [
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\GameBar",
+        "Name": "UseNexusForGameBarEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "Name": "AppCaptureEnabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      },
+      {
+        "Path": "HKCU:\\System\\GameConfigStore",
+        "Name": "GameDVR_Enabled",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "0",
+        "DefaultState": "true"
+      }
+    ],
+    "link": "https://apps.microsoft.com/detail/9NZKPSTSNW4P"
+  },
   "WPFToggleLongPaths": {
     "Content": "Enable Long Paths",
     "Description": "Toggles support for file paths longer than 260 characters in Explorer.",

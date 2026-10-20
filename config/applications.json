@@ -1,4 +1,13 @@
 {
+    "7zip": {
+        "category": "Utilities",
+        "choco": "7zip",
+        "content": "7-Zip",
+        "description": "7-Zip is a free file archiver that opens and creates zip, 7z, rar and many other archive formats.",
+        "link": "https://www.7-zip.org/",
+        "winget": "7zip.7zip",
+        "foss": true
+    },
     "bitwarden": {
         "category": "Utilities",
         "choco": "bitwarden",
@@ -161,6 +170,15 @@
         "winget": "Proton.ProtonVPN",
         "foss": true
     },
+    "python": {
+        "category": "Development",
+        "choco": "python314",
+        "content": "Python 3",
+        "description": "Python is a popular programming language for scripts, automation, data and learning to code.",
+        "link": "https://www.python.org/",
+        "winget": "Python.Python.3.14",
+        "foss": true
+    },
     "revo": {
         "category": "Utilities",
         "choco": "revo-uninstaller",
@@ -215,6 +233,15 @@
         "winget": "Logitech.GHUB",
         "foss": false
     },
+    "spotify": {
+        "category": "Multimedia Tools",
+        "choco": "spotify",
+        "content": "Spotify",
+        "description": "Spotify is a music streaming app with millions of songs, podcasts and playlists.",
+        "link": "https://www.spotify.com/",
+        "winget": "Spotify.Spotify",
+        "foss": false
+    },
     "steam": {
         "category": "Games",
         "choco": "steam-client",
@@ -241,6 +268,24 @@
         "link": "https://www.voidtools.com/",
         "winget": "voidtools.Everything",
         "foss": false
+    },
+    "vlc": {
+        "category": "Multimedia Tools",
+        "choco": "vlc",
+        "content": "VLC",
+        "description": "VLC is a free media player that plays almost any video or audio file, DVDs and streams.",
+        "link": "https://www.videolan.org/vlc/",
+        "winget": "VideoLAN.VLC",
+        "foss": true
+    },
+    "vscode": {
+        "category": "Development",
+        "choco": "vscode",
+        "content": "VS Code",
+        "description": "Visual Studio Code is a free code editor with debugging, Git and a large library of extensions.",
+        "link": "https://code.visualstudio.com/",
+        "winget": "Microsoft.VisualStudioCode",
+        "foss": true
     },
     "ventoy": {
         "category": "Pro Tools",

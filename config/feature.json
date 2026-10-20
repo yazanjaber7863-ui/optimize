@@ -129,6 +129,16 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFMyPCInfo"
   },
+  "WPFWhatsRunning": {
+    "tab": "Health",
+    "Content": "What's Using My PC",
+    "Description": "Shows which apps are using the most memory and CPU right now, and which apps start with Windows.",
+    "category": "Info",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFWhatsRunning"
+  },
   "WPFDiskHealth": {
     "tab": "Health",
     "Content": "Disk Health Check",

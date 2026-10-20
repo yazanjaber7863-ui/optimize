@@ -91,6 +91,9 @@ function Show-WinUtilReport {
             } else {
                 $label.Opacity = 0.7
                 $label.Margin = [Windows.Thickness]::new(0, 2, 8, 2)
+                # Long app names would be cut mid-word by the fixed column
+                $label.TextTrimming = "CharacterEllipsis"
+                $label.ToolTip = $row.Label
                 $grid.Children.Add($label) | Out-Null
 
                 $value = New-Object Windows.Controls.TextBlock
