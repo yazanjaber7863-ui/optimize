@@ -151,7 +151,7 @@ function Invoke-WPFButtonAction {
 
     # Fallback to hard-coded switch for buttons not in feature.json
     Switch -Wildcard ($Button) {
-        "WPFTab?BT" {Invoke-WPFTab $Button}
+        "WPFTab*BT" {Invoke-WPFTab $Button}
         "WPFInstall" {Invoke-WPFInstall}
         "WPFUninstall" {Invoke-WPFUnInstall}
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
@@ -172,6 +172,7 @@ function Invoke-WPFButtonAction {
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFAppxRemoval" {Invoke-WPFTab "WPFTab6BT"}
+        "WPFPanelUpdates" {Invoke-WPFTab "WPFTab4BT"}
         "WPFBackToTweaks" {Invoke-WPFTab "WPFTab2BT"}
         "WPFInstallSelectedAppx" {Invoke-WPFAppxInstall}
         "WPFRemoveSelectedAppx" {Invoke-WPFAppxRemoval}

@@ -44,7 +44,8 @@ function Invoke-WPFGetInstalled {
                 Reset-WPFCheckBoxes -checkboxfilterpattern "WPFInstall*"
             } else {
                 foreach ($name in $Found) {
-                    $sync.$name.ischecked = $true
+                    # Entries on a tab that has not been opened yet have no control to tick
+                    if ($sync.$name) { $sync.$name.ischecked = $true }
                 }
             }
         }

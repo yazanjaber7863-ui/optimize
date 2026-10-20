@@ -167,11 +167,12 @@ function Invoke-WPFUIElements {
             $stackPanelContainer.Children.Add($label) | Out-Null
             $sync[$category] = $label
 
-            # Sort entries by type (checkboxes first, then buttons, then comboboxes, notes last) and then alphabetically by Content
+            # Sort entries by type (checkboxes first, then comboboxes, then buttons, notes last) and then alphabetically by Content.
+            # A combobox comes before buttons so a button that applies it (Apply DNS) sits under it
             $entries = $organizedData[$panelKey][$category] | Sort-Object @{Expression = {
                 switch ($_.Type) {
-                    'Button' { 1 }
-                    'Combobox' { 2 }
+                    'Combobox' { 1 }
+                    'Button' { 2 }
                     'Note' { 3 }
                     default { 0 }
                 }

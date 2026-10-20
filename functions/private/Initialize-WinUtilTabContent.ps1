@@ -32,10 +32,15 @@ function Initialize-WinUtilTabContent {
                 Initialize-WinUtilInstallTabControls
             }
             "Tweaks" {
-                Invoke-WPFUIElements -configVariable $sync.configs.tweaks -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
+                Invoke-WPFUIElements -configVariable (Get-WinUtilTabEntries -Config $sync.configs.tweaks) -targetGridName "tweakspanel" -columncount 2 -Yield:$Yield
             }
             "Config" {
-                Invoke-WPFUIElements -configVariable $sync.configs.feature -targetGridName "featurespanel" -columncount 2 -Yield:$Yield
+                Invoke-WPFUIElements -configVariable (Get-WinUtilTabEntries -Config $sync.configs.feature) -targetGridName "featurespanel" -columncount 2 -Yield:$Yield
+            }
+            { $_ -in "Health", "Gaming", "Maintenance", "Backup" } {
+                # These tabs mix tweaks and buttons, picked out by the "tab" field on each entry
+                $tabEntries = Get-WinUtilTabEntries -Config $sync.configs.tweaks, $sync.configs.feature -Tab $TabName
+                Invoke-WPFUIElements -configVariable $tabEntries -targetGridName "$($TabName.ToLower())panel" -columncount 2 -Yield:$Yield
             }
             "AppX" {
                 Invoke-WPFUIElements -configVariable $sync.configs.appx -targetGridName "appxpanel" -columncount 2 -Yield:$Yield

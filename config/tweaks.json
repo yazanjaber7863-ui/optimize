@@ -1672,10 +1672,11 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/multiplaneoverlay"
   },
   "WPFToggleMouseAcceleration": {
+    "tab": "Gaming",
     "Content": "Mouse Acceleration",
     "Description": "Makes it so Cursor movement is affected by the speed of your physical mouse movements.",
-    "category": "Customize Preferences",
-    "panel": "2",
+    "category": "Mouse & Network",
+    "panel": "1",
     "Type": "Toggle",
     "registry": [
       {
@@ -1930,10 +1931,11 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/customize-preferences/taskview"
   },
   "WPFToggleGameMode": {
+    "tab": "Gaming",
     "Content": "Game Mode",
     "Description": "Toggles Windows prioritizes gaming performance by allocating system resources to games.",
-    "category": "Customize Preferences",
-    "panel": "2",
+    "category": "Performance",
+    "panel": "0",
     "Type": "Toggle",
     "registry": [
       {
@@ -1981,25 +1983,28 @@
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/oosubutton"
   },
   "WPFchangedns": {
+    "tab": "Gaming",
     "Content": "DNS - Set to:",
-    "category": "z__Advanced Tweaks - CAUTION",
+    "category": "Mouse & Network",
     "panel": "1",
     "Type": "Combobox",
     "ComboItems": "Default DHCP Fastest Google Cloudflare Cloudflare_Malware Cloudflare_Malware_Adult Open_DNS Quad9 AdGuard_Ads_Trackers AdGuard_Ads_Trackers_Malware_Adult",
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/changedns"
   },
   "WPFAddUltPerf": {
+    "tab": "Gaming",
     "Content": "Ultimate Performance Profile - Enable",
-    "category": "Performance Plans - NOT FOR LAPTOPS",
-    "panel": "2",
+    "category": "Performance",
+    "panel": "0",
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/code-reference/tweaks/performance-plans---not-for-laptops/addultperf"
   },
   "WPFRemoveUltPerf": {
+    "tab": "Gaming",
     "Content": "Ultimate Performance Profile - Disable",
-    "category": "Performance Plans - NOT FOR LAPTOPS",
-    "panel": "2",
+    "category": "Performance",
+    "panel": "0",
     "Type": "Button",
     "ButtonWidth": "300",
     "link": "https://winutil.christitus.com/code-reference/tweaks/performance-plans---not-for-laptops/removeultperf"
