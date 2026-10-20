@@ -412,6 +412,7 @@ Describe "Invoke-WPFUnInstall job body" {
         Mock Get-WinUtilSelectedPackages {
             New-WinUtilPackageSplit -Winget @("Git.Git") -Choco @("vlc")
         }
+        Mock Get-Command { [pscustomobject]@{ Name = "choco" } } -ParameterFilter { $Name -eq "choco" }
         Mock Step-WinUtilJob { }
         Mock Install-WinUtilProgramWinget { }
         Mock Install-WinUtilProgramChoco { }
@@ -422,6 +423,22 @@ Describe "Invoke-WPFUnInstall job body" {
     AfterEach {
         Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
         Remove-Variable -Name capturedUninstallJob -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "uninstalls Chocolatey apps by name with winget once Chocolatey is gone" {
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq "choco" }
+        $rustdesk = New-WinUtilPackage -Name "RustDesk" -Winget "na" -Choco "rustdesk"
+        $rustdesk | Add-Member -NotePropertyName content -NotePropertyValue "RustDesk"
+        Mock Get-WinUtilSelectedPackages { New-WinUtilPackageSplit -Choco @("rustdesk") }
+
+        Invoke-WPFUnInstall -PackagesToUninstall $rustdesk
+        $jobParameters = $script:capturedUninstallJob.Parameters
+        & $script:capturedUninstallJob.ScriptBlock @jobParameters
+
+        Should -Invoke -CommandName Install-WinUtilProgramWinget -Times 1 -Exactly -ParameterFilter {
+            $Action -eq "Uninstall" -and @($Programs)[0] -eq "name:RustDesk"
+        }
+        Should -Invoke -CommandName Install-WinUtilProgramChoco -Times 0 -Exactly
     }
 
     It "uninstalls split winget and choco packages and reports progress" {

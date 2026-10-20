@@ -54,6 +54,12 @@ Function Install-WinUtilProgramWinget {
             $source = "msstore"
             $program = $program.Substring("msstore:".Length)
         }
+        # An app winget's catalog does not have, matched by its name in Windows' installed list
+        $byName = $Action -eq "Uninstall" -and $program.StartsWith("name:", [System.StringComparison]::OrdinalIgnoreCase)
+        if ($byName) {
+            $source = "installed apps"
+            $program = $program.Substring("name:".Length)
+        }
 
         Write-WinUtilLog -Component "Package" -Message "$Action winget package: $program (source: $source)"
 
@@ -62,7 +68,13 @@ Function Install-WinUtilProgramWinget {
         $exitCode = -1
 
         $arguments = switch ($Action) {
-            "Uninstall" { @("uninstall", "--id", $program, "--source", $source, "--silent") }
+            "Uninstall" {
+                if ($byName) {
+                    @("uninstall", "--name", "`"$program`"", "--exact", "--silent")
+                } else {
+                    @("uninstall", "--id", $program, "--source", $source, "--silent")
+                }
+            }
             # --include-unknown because the scan that found these ran with it: without it winget
             # refuses every package whose installed version it could not read
             "Upgrade" {

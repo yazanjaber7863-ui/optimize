@@ -38,6 +38,19 @@ function Invoke-WPFUnInstall {
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToUninstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted['Winget']
         $packagesChoco = $packagesSorted['Choco']
+
+        # Chocolatey may have been removed after it installed these. The apps are still in
+        # Windows' installed list, where winget can find them by name.
+        if ($packagesChoco.Count -gt 0 -and -not (Get-Command choco -ErrorAction SilentlyContinue)) {
+            foreach ($chocoId in @($packagesChoco)) {
+                $package = $PackagesToUninstall | Where-Object { $_.choco -eq $chocoId } | Select-Object -First 1
+                $displayName = if ($package.content) { $package.content } else { $chocoId }
+                Write-WinUtilLog -Component "Uninstall" -Message "Chocolatey is not installed, uninstalling $displayName by name with winget"
+                $null = $packagesWinget.Add("name:$displayName")
+            }
+            $packagesChoco.Clear()
+        }
+
         $totalPackages = @($packagesWinget).Count + @($packagesChoco).Count
         $completedPackages = 0
         Write-WinUtilLog -Component "Uninstall" -Message "Uninstall package manager split: winget=$(@($packagesWinget).Count), choco=$(@($packagesChoco).Count)"
