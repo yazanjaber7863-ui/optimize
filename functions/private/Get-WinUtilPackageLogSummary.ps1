@@ -21,6 +21,8 @@ function Get-WinUtilPackageLogSummary {
             "$packageName (choco: $($package.choco))"
         } elseif (-not [string]::IsNullOrWhiteSpace([string]$package.winget) -and $package.winget -ne "na") {
             "$packageName (winget: $($package.winget))"
+        } elseif (-not [string]::IsNullOrWhiteSpace([string]$package.choco) -and $package.choco -ne "na") {
+            "$packageName (choco: $($package.choco))"
         } else {
             "$packageName (no package id)"
         }

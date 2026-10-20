@@ -53,7 +53,6 @@ Describe "Get-WinUtilSelectedPackages" {
         $packages = @(
             [pscustomobject]@{ winget = ""; choco = "" }
             [pscustomobject]@{ winget = "na"; choco = "na" }
-            [pscustomobject]@{ choco = "only-choco" }
             [pscustomobject]@{ winget = "   " }
         )
 
@@ -61,6 +60,19 @@ Describe "Get-WinUtilSelectedPackages" {
 
         @($result["Winget"]).Count | Should -Be 0
         @($result["Choco"]).Count | Should -Be 0
+    }
+
+    It "sends Chocolatey-only packages to choco when winget is preferred" {
+        $packages = @(
+            [pscustomobject]@{ winget = "Git.Git"; choco = "git" }
+            [pscustomobject]@{ winget = "na"; choco = "rustdesk" }
+            [pscustomobject]@{ choco = "only-choco" }
+        )
+
+        $result = Get-WinUtilSelectedPackages -PackageList $packages -Preference "Winget"
+
+        (@($result["Winget"]) -join "|") | Should -Be "Git.Git"
+        (@($result["Choco"]) -join "|") | Should -Be "rustdesk|only-choco"
     }
 
     It "deduplicates package IDs" {

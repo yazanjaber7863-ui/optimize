@@ -134,6 +134,15 @@
         "winget": "Parsec.Parsec",
         "foss": false
     },
+    "rustdesk": {
+        "category": "Utilities",
+        "choco": "rustdesk",
+        "content": "RustDesk",
+        "description": "RustDesk is an open-source remote desktop app. It is not on winget, so Optimize installs it with Chocolatey.",
+        "link": "https://rustdesk.com/",
+        "winget": "na",
+        "foss": true
+    },
     "powertoys": {
         "category": "Microsoft Tools",
         "choco": "powertoys",

@@ -15,6 +15,32 @@ function Invoke-WPFInstall {
     }
 
     $ManagerPreference = $sync.preferences.packagemanager
+
+    # Apps that are only on Chocolatey need it installed even when winget is preferred. Ask
+    # first, and offer to take Chocolatey back off once the install is done.
+    $OfferChocoRemoval = $false
+    $chocoOnly = @($PackagesToInstall | Where-Object {
+        ([string]::IsNullOrWhiteSpace([string]$_.winget) -or $_.winget -eq "na") -and
+            -not [string]::IsNullOrWhiteSpace([string]$_.choco) -and $_.choco -ne "na"
+    })
+    if ($ManagerPreference -ne "Choco" -and $chocoOnly.Count -gt 0 -and -not (Get-Command choco -ErrorAction SilentlyContinue)) {
+        $names = ($chocoOnly | ForEach-Object { if ($_.content) { $_.content } else { $_.choco } }) -join ", "
+        $answer = Show-WinUtilMessage -Title "Chocolatey needed" -Button "YesNo" -Icon "Warning" -Message (
+            "$names is not on winget, only on Chocolatey.`n`n" +
+            "To install $names, Optimize has to install Chocolatey first. If you don't want Chocolatey, $names can't be installed from here.`n`n" +
+            "Install Chocolatey and continue?")
+
+        if ($answer -eq "Yes") {
+            $OfferChocoRemoval = $true
+        } else {
+            Write-WinUtilLog -Component "Install" -Message "Chocolatey declined, skipping: $names"
+            $PackagesToInstall = @($PackagesToInstall | Where-Object { $chocoOnly -notcontains $_ })
+            if ($PackagesToInstall.Count -eq 0) {
+                return
+            }
+        }
+    }
+
     Write-WinUtilLog -Component "Install" -Message "Install requested for $(@($PackagesToInstall).Count) selected package(s) using preference: $ManagerPreference"
     $packageSummary = Get-WinUtilPackageLogSummary -Packages $PackagesToInstall -Preference $ManagerPreference
     Write-WinUtilLog -Component "Install" -Message "Install selected package(s): $($packageSummary -join '; ')"
@@ -22,8 +48,9 @@ function Invoke-WPFInstall {
     Start-WinUtilJob -Name "Install" -Description "Installing apps" -DisableAppList -Parameters @{
         PackagesToInstall = $PackagesToInstall
         ManagerPreference = $ManagerPreference
+        OfferChocoRemoval = $OfferChocoRemoval
     } -ScriptBlock {
-        param($PackagesToInstall, $ManagerPreference)
+        param($PackagesToInstall, $ManagerPreference, $OfferChocoRemoval)
 
         $packagesSorted = Get-WinUtilSelectedPackages -PackageList $PackagesToInstall -Preference $ManagerPreference
         $packagesWinget = $packagesSorted['Winget']
@@ -60,6 +87,16 @@ function Invoke-WPFInstall {
             }
             $completedPackages += @($packagesChoco).Count
             Step-WinUtilJob -Status "Installed Chocolatey packages ($completedPackages/$totalPackages)" -Percent ([int](($completedPackages / $totalPackages) * 100))
+        }
+
+        if ($OfferChocoRemoval) {
+            $answer = Show-WinUtilMessage -Title "Remove Chocolatey?" -Button "YesNo" -Icon "Question" -Message (
+                "Optimize installed Chocolatey only to get $($packagesChoco -join ', ').`n`n" +
+                "Remove Chocolatey now? The apps stay installed. To update or uninstall them from Optimize later, Chocolatey has to be installed again (you can always uninstall them from Windows Settings).")
+            if ($answer -eq "Yes") {
+                Step-WinUtilJob -Status "Removing Chocolatey" -State "Indeterminate"
+                Uninstall-WinUtilChoco
+            }
         }
 
         Complete-WinUtilPackageRun -Action "Install" -Results $results

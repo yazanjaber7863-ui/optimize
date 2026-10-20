@@ -33,6 +33,7 @@ BeforeAll {
     }
     function Install-WinUtilWinget { }
     function Install-WinUtilChoco { }
+    function Uninstall-WinUtilChoco { }
     function Install-WinUtilProgramWinget {
         param($Action, $Programs)
     }
@@ -182,11 +183,67 @@ Describe "Invoke-WPFInstall entrypoint" {
 
         Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
             $Message -eq "Please select the program(s) to install or upgrade." -and
-                $Title -eq "WinUtil" -and
+                $Title -eq "Optimize" -and
                 $Button -eq "OK" -and
                 $Icon -eq "Warning"
         }
         Should -Invoke -CommandName Start-WinUtilJob -Times 0 -Exactly
+    }
+}
+
+Describe "Invoke-WPFInstall Chocolatey-only apps" {
+    BeforeEach {
+        $script:git = New-WinUtilPackage
+        $script:rustdesk = New-WinUtilPackage -Name "RustDesk" -Winget "na" -Choco "rustdesk"
+        New-WinUtilInstallTestContext -Packages @($script:git, $script:rustdesk)
+        $script:capturedInstallJob = $null
+
+        Mock Get-Command { $null } -ParameterFilter { $Name -eq "choco" }
+        Mock Start-WinUtilJob {
+            $script:capturedInstallJob = [pscustomobject]@{
+                ScriptBlock = $ScriptBlock
+                Parameters = $Parameters
+            }
+        }
+        Mock Write-WinUtilLog { }
+    }
+
+    AfterEach {
+        Remove-Variable -Name sync -Scope Script -ErrorAction SilentlyContinue
+        Remove-Variable -Name capturedInstallJob -Scope Script -ErrorAction SilentlyContinue
+    }
+
+    It "warns that Chocolatey is needed and offers to remove it afterwards when accepted" {
+        Mock Show-WinUtilMessage { "Yes" }
+
+        Invoke-WPFInstall
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter {
+            $Title -eq "Chocolatey needed" -and $Button -eq "YesNo"
+        }
+        @($script:capturedInstallJob.Parameters.PackagesToInstall).Count | Should -Be 2
+        $script:capturedInstallJob.Parameters.OfferChocoRemoval | Should -BeTrue
+    }
+
+    It "drops the Chocolatey-only apps when Chocolatey is declined" {
+        Mock Show-WinUtilMessage { "No" }
+
+        Invoke-WPFInstall
+
+        @($script:capturedInstallJob.Parameters.PackagesToInstall).Count | Should -Be 1
+        @($script:capturedInstallJob.Parameters.PackagesToInstall)[0].winget | Should -Be "Git.Git"
+        $script:capturedInstallJob.Parameters.OfferChocoRemoval | Should -BeFalse
+    }
+
+    It "does not ask when Chocolatey is already installed" {
+        Mock Get-Command { [pscustomobject]@{ Name = "choco" } } -ParameterFilter { $Name -eq "choco" }
+        Mock Show-WinUtilMessage { "No" }
+
+        Invoke-WPFInstall
+
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 0 -Exactly
+        @($script:capturedInstallJob.Parameters.PackagesToInstall).Count | Should -Be 2
+        $script:capturedInstallJob.Parameters.OfferChocoRemoval | Should -BeFalse
     }
 }
 
@@ -243,6 +300,21 @@ Describe "Invoke-WPFInstall job body" {
         Should -Invoke -CommandName Step-WinUtilJob -Times 1 -Exactly -ParameterFilter {
             $Status -eq "Installed Chocolatey packages (2/2)" -and $Percent -eq 100
         }
+    }
+
+    It "removes Chocolatey afterwards only when offered and accepted" {
+        Mock Uninstall-WinUtilChoco { }
+        Mock Show-WinUtilMessage { "Yes" }
+
+        Invoke-WPFInstall
+        $jobParameters = $script:capturedInstallJob.Parameters
+        & $script:capturedInstallJob.ScriptBlock @jobParameters
+        Should -Invoke -CommandName Uninstall-WinUtilChoco -Times 0 -Exactly
+
+        $jobParameters.OfferChocoRemoval = $true
+        & $script:capturedInstallJob.ScriptBlock @jobParameters
+        Should -Invoke -CommandName Show-WinUtilMessage -Times 1 -Exactly -ParameterFilter { $Title -eq "Remove Chocolatey?" }
+        Should -Invoke -CommandName Uninstall-WinUtilChoco -Times 1 -Exactly
     }
 
     It "lets a failure surface so the job layer can handle it" {

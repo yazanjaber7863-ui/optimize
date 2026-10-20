@@ -45,7 +45,12 @@ function Get-WinUtilSelectedPackages {
                 }
             }
             "Winget" {
-                Add-PackageId -Target $packagesWinget -PackageId $package.winget
+                # Some apps are only on Chocolatey; the install entrypoint asks before that happens
+                if ([string]::IsNullOrWhiteSpace([string]$package.winget) -or $package.winget -eq "na") {
+                    Add-PackageId -Target $packagesChoco -PackageId $package.choco
+                } else {
+                    Add-PackageId -Target $packagesWinget -PackageId $package.winget
+                }
             }
         }
     }
