@@ -1,35 +1,39 @@
 {
   "WPFOptimizeMyPC": {
+    "tab": "Maintenance",
     "Content": "Optimize My PC",
     "Description": "Deletes temporary files, runs Disk Cleanup and removes old Windows Update files. Shows how much space was freed when it finishes.",
-    "category": "Optimize",
-    "panel": "1",
+    "category": "Clean Up",
+    "panel": "0",
     "Type": "Button",
     "ButtonWidth": "300",
     "function": "Invoke-WPFOptimizeMyPC"
   },
   "WPFStartupApps": {
+    "tab": "Maintenance",
     "Content": "Startup Apps",
     "Description": "Shows every app that opens when Windows starts. Untick the ones you don't need for a faster boot. Nothing is uninstalled.",
-    "category": "Optimize",
-    "panel": "1",
+    "category": "Clean Up",
+    "panel": "0",
     "Type": "Button",
     "ButtonWidth": "300",
     "function": "Invoke-WPFStartupApps"
   },
   "WPFGamingMode": {
+    "tab": "Gaming",
     "Content": "Gaming Mode",
     "Description": "Switches to the High Performance power plan, turns on Game Mode and turns off Xbox Game Bar and background recording. Undo: pick Balanced in Settings > System > Power.",
-    "category": "Optimize",
-    "panel": "1",
+    "category": "Performance",
+    "panel": "0",
     "Type": "Button",
     "ButtonWidth": "300",
     "function": "Invoke-WPFGamingMode"
   },
   "WPFDriverUpdates": {
+    "tab": "Maintenance",
     "Content": "Driver Updates",
     "Description": "Checks Windows Update for new drivers and asks before installing them, then opens NVIDIA App and Intel Driver & Support Assistant if you have them.",
-    "category": "Optimize",
+    "category": "Updates",
     "panel": "1",
     "Type": "Button",
     "ButtonWidth": "300",
@@ -114,5 +118,114 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFFeatureInstall",
     "link": "https://winutil.christitus.com/code-reference/features/features/install"
+  },
+  "WPFMyPCInfo": {
+    "tab": "Health",
+    "Content": "My PC Info",
+    "Description": "Shows your PC name, Windows edition and activation, CPU, GPU, RAM, free space on each drive and how long since the last restart.",
+    "category": "Info",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFMyPCInfo"
+  },
+  "WPFDiskHealth": {
+    "tab": "Health",
+    "Content": "Disk Health Check",
+    "Description": "Shows whether your SSDs and hard drives are healthy: life left, temperature, hours used and errors. Warns you before a drive fails.",
+    "category": "Health",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFDiskHealth"
+  },
+  "WPFPingTest": {
+    "tab": "Gaming",
+    "Content": "Ping Test",
+    "Description": "Measures ping, jitter and packet loss to your router and to Cloudflare, Google and Quad9, and tells you whether lag comes from your Wi-Fi or your internet provider.",
+    "category": "Mouse & Network",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFPingTest"
+  },
+  "WPFApplyDNS": {
+    "tab": "Gaming",
+    "Content": "Apply DNS",
+    "Description": "Switches to the DNS provider picked in the box above. Cloudflare is usually the fastest.",
+    "category": "Mouse & Network",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFApplyDNS"
+  },
+  "WPFAutoClean": {
+    "tab": "Maintenance",
+    "Content": "Weekly Auto-Clean (On / Off)",
+    "Description": "Every Sunday at 12:00 Windows quietly deletes temp files and old Windows Update files. Click again to turn it off.",
+    "category": "Clean Up",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFAutoClean"
+  },
+  "WPFCreateRestorePoint": {
+    "tab": "Maintenance",
+    "Content": "Create Restore Point Now",
+    "Description": "Saves a snapshot of Windows settings and system files you can go back to if something breaks.",
+    "category": "Restore Points",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFCreateRestorePoint"
+  },
+  "WPFSystemRestore": {
+    "tab": "Maintenance",
+    "Content": "Go Back to a Restore Point",
+    "Description": "Opens Windows System Restore to pick a restore point to go back to. Your personal files are not touched.",
+    "category": "Restore Points",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFSystemRestore"
+  },
+  "WPFPanelUpdates": {
+    "tab": "Maintenance",
+    "Content": "Windows Update Settings",
+    "Description": "Pause updates or choose security updates only.",
+    "category": "Updates",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300"
+  },
+  "WPFBackupApps": {
+    "tab": "Backup",
+    "Content": "Backup My Apps",
+    "Description": "Saves a list of your installed apps to a file. Use Restore Apps on a new PC or after reinstalling Windows to get them all back.",
+    "category": "Apps",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFBackupApps"
+  },
+  "WPFRestoreApps": {
+    "tab": "Backup",
+    "Content": "Restore Apps from Backup",
+    "Description": "Installs every app listed in a backup file made with Backup My Apps.",
+    "category": "Apps",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFRestoreApps"
+  },
+  "WPFRenamePC": {
+    "tab": "Backup",
+    "Content": "Rename PC",
+    "Description": "Changes the PC's name (now a random one like DESKTOP-JS4RJ0B) to one you choose. Needs a restart.",
+    "category": "This PC",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFRenamePC"
   }
 }
