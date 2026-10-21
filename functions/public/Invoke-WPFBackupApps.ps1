@@ -22,6 +22,9 @@ function Invoke-WPFBackupApps {
 
     Step-WinUtilJob -Status "Listing installed apps" -State "Indeterminate"
     Write-WinUtilLog -Component "Backup" -Message "Exporting installed apps to $path"
+    # The save dialog already asked before replacing a file. Removing it first means a failed
+    # export cannot leave the old backup behind looking like a new one.
+    Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
     winget.exe export --output "$path" --source winget --accept-source-agreements --disable-interactivity | Out-Null
     if (-not (Test-Path -LiteralPath $path)) {
         throw "winget could not write the backup (exit code $LASTEXITCODE)."
