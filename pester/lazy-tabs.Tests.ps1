@@ -19,6 +19,7 @@ BeforeAll {
 
     . (Join-Path $script:repoRoot "functions\public\Initialize-WPFUI.ps1")
     . (Join-Path $script:repoRoot "functions\private\Initialize-WinUtilTabContent.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTabEntries.ps1")
 }
 
 Describe "Initialize-WinUtilTabContent" {
@@ -84,6 +85,32 @@ Describe "Initialize-WinUtilTabContent" {
         Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
             $targetGridName -eq "appxpanel" -and $columncount -eq 2
         }
+    }
+
+    It "builds the Optimize tabs from the entries tagged with their tab" {
+        $script:sync.configs.tweaks = [pscustomobject]@{
+            WPFToggleGameMode = [pscustomobject]@{ tab = "Gaming"; Content = "Game Mode" }
+            WPFTweaksTele = [pscustomobject]@{ Content = "Telemetry" }
+        }
+        $script:sync.configs.feature = [pscustomobject]@{
+            WPFPingTest = [pscustomobject]@{ tab = "Gaming"; Content = "Ping Test" }
+            WPFMyPCInfo = [pscustomobject]@{ tab = "Health"; Content = "My PC Info" }
+        }
+
+        foreach ($tab in "Health", "Gaming", "Maintenance", "Backup") {
+            Initialize-WinUtilTabContent -TabName $tab
+        }
+
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "gamingpanel" -and
+                (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFToggleGameMode,WPFPingTest"
+        }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter {
+            $targetGridName -eq "healthpanel" -and
+                (@($configVariable.PSObject.Properties.Name) -join ",") -eq "WPFMyPCInfo"
+        }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter { $targetGridName -eq "maintenancepanel" }
+        Should -Invoke -CommandName Invoke-WPFUIElements -Times 1 -Exactly -ParameterFilter { $targetGridName -eq "backuppanel" }
     }
 
     It "re-applies checkbox selections after building a tab's controls" {

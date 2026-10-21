@@ -162,11 +162,19 @@ Describe "XAML document" {
             "WPFTab4",
             "WPFTab5",
             "WPFTab6",
+            "WPFTab7",
+            "WPFTab8",
+            "WPFTab9",
+            "WPFTab10",
             "WPFTab1BT",
             "WPFTab2BT",
             "WPFTab3BT",
             "WPFTab4BT",
             "WPFTab5BT",
+            "WPFTab7BT",
+            "WPFTab8BT",
+            "WPFTab9BT",
+            "WPFTab10BT",
             "SearchBar",
             "SearchBarIcon",
             "SearchBarClearButton",
@@ -187,8 +195,11 @@ Describe "XAML document" {
             "tweakspanel",
             "featurespanel",
             "appxpanel",
-            "WPFstandard",
-            "WPFminimal",
+            "healthpanel",
+            "gamingpanel",
+            "maintenancepanel",
+            "backuppanel",
+            "WPFMySetup",
             "WPFAdvanced",
             "WPFClearTweaksSelection",
             "WPFGetInstalledTweaks",
@@ -283,7 +294,11 @@ Describe "XAML document" {
             "WPFTab3:Config",
             "WPFTab4:Updates",
             "WPFTab5:Win11ISO",
-            "WPFTab6:AppX"
+            "WPFTab6:AppX",
+            "WPFTab7:Health",
+            "WPFTab8:Gaming",
+            "WPFTab9:Maintenance",
+            "WPFTab10:Backup"
         )
 
         if (@($actualTabs).Count -ne $expectedTabs.Count) {
@@ -340,7 +355,8 @@ Describe "XAML document" {
         $comboToggleStyle | Should -Not -BeNullOrEmpty
         $comboToggle.GetAttribute("Style") | Should -Be "{StaticResource ComboBoxToggleButtonStyle}"
         $comboItemStyle | Should -Not -BeNullOrEmpty
-        $navButtons.Count | Should -Be 5
+        # Install, Tweaks, Config, Updates, Win11ISO, Health, Gaming, Maintenance, Backup
+        $navButtons.Count | Should -Be 9
         foreach ($navButton in $navButtons) {
             $navButton.GetAttribute("Style") | Should -Be "{StaticResource TabToggleButton}"
         }
@@ -542,7 +558,7 @@ Describe "WPF handler wiring" {
         $unhandledButtons = New-Object System.Collections.Generic.List[string]
 
         foreach ($button in $buttonControls) {
-            $hasSwitchHandler = (Test-WinUtilNameInSet -Name $button.Name -Set $buttonSwitchNames) -or $button.Name -like "WPFTab?BT"
+            $hasSwitchHandler = (Test-WinUtilNameInSet -Name $button.Name -Set $buttonSwitchNames) -or $button.Name -match '^WPFTab\d+BT$'
             $hasFeatureHandler = Test-WinUtilNameInSet -Name $button.Name -Set $featureNames
             $escapedName = [regex]::Escape($button.Name)
             $explicitHandlerPattern = '\$sync\s*(?:\[\s*["'']' + $escapedName + '["'']\s*\]|\.' + $escapedName + ')\.Add_Click'

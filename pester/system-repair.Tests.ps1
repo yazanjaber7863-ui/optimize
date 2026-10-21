@@ -9,10 +9,49 @@ BeforeAll {
 
     function Step-WinUtilJob { param([string]$Status, [int]$Percent, [string]$State, [string]$Overlay, [switch]$Hide) }
     function Write-WinUtilLog { param($Message, $Level, $Component) }
+    function Show-WinUtilRepairPicker { }
+    function Request-WinUtilRestart { param($Message, $Reason) }
+}
+
+Describe "Invoke-WPFSystemRepair step picker" {
+    BeforeEach {
+        Mock Write-WinUtilLog { }
+        Mock Step-WinUtilJob { }
+        Mock Request-WinUtilRestart { }
+        Mock Start-Process { [pscustomobject]@{ ExitCode = 0 } }
+    }
+
+    It "runs nothing when the picker is cancelled" {
+        Mock Show-WinUtilRepairPicker { $null }
+
+        Invoke-WPFSystemRepair
+
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly
+    }
+
+    It "runs only the picked steps, in chkdsk, DISM, SFC order" {
+        Mock Show-WinUtilRepairPicker { "SFC,Disk" }
+
+        Invoke-WPFSystemRepair
+
+        Should -Invoke -CommandName Start-Process -Times 2 -Exactly
+        Should -Invoke -CommandName Start-Process -Times 0 -Exactly -ParameterFilter { ($ArgumentList -join " ") -match "dism" }
+        Should -Invoke -CommandName Request-WinUtilRestart -Times 1 -Exactly
+    }
+
+    It "does not offer a restart after a disk check alone" {
+        Mock Show-WinUtilRepairPicker { "Disk" }
+
+        Invoke-WPFSystemRepair
+
+        Should -Invoke -CommandName Request-WinUtilRestart -Times 0 -Exactly
+    }
 }
 
 Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
     BeforeEach {
+        Mock Show-WinUtilRepairPicker { "Disk,DISM,SFC" }
+        Mock Request-WinUtilRestart { }
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
         Mock Step-WinUtilJob { }
@@ -67,6 +106,8 @@ Describe "Invoke-WPFSystemRepair chkdsk exit codes" {
 
 Describe "Invoke-WPFSystemRepair per step codes" {
     BeforeEach {
+        Mock Show-WinUtilRepairPicker { "Disk,DISM,SFC" }
+        Mock Request-WinUtilRestart { }
         Mock Write-WinUtilLog { }
         Mock Write-Warning { }
         Mock Step-WinUtilJob { }

@@ -430,10 +430,11 @@ Describe "UI-rendered config entries" {
     It "contains required feature fields and valid configured functions" {
         $feature = Get-WinUtilConfigObject -Name "feature"
         $functionNames = Get-WinUtilTopLevelFunctionNames
-        $requiredFields = @("Content", "category", "panel", "link")
         $invalidEntries = New-Object System.Collections.Generic.List[string]
 
         foreach ($entry in $feature.PSObject.Properties) {
+            # Only checkboxes show the "(?)" help link; a button has nowhere to show one
+            $requiredFields = if ($entry.Value.Type -eq "Button") { @("Content", "category", "panel") } else { @("Content", "category", "panel", "link") }
             foreach ($missingField in (Get-WinUtilMissingRequiredFields -EntryName $entry.Name -Entry $entry.Value -RequiredFields $requiredFields)) {
                 $invalidEntries.Add($missingField)
             }
@@ -443,7 +444,11 @@ Describe "UI-rendered config entries" {
             }
 
             if ($entry.Value.Type -eq "Button") {
-                if (-not $entry.Value.function -and -not $entry.Value.InvokeScript) {
+                # A WPFPanel* button without a function falls through to Invoke-WPFButton's
+                # switch, which opens a page or a Windows applet for it
+                $buttonSource = Get-Content -Path (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1") -Raw
+                $handledBySwitch = $entry.Name -like "WPFPanel*" -and $buttonSource -match ('"' + [regex]::Escape($entry.Name) + '"\s*\{')
+                if (-not $entry.Value.function -and -not $entry.Value.InvokeScript -and -not $handledBySwitch) {
                     $invalidEntries.Add("$($entry.Name) button missing function or InvokeScript")
                 }
             } else {
