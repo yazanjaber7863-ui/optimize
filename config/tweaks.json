@@ -1313,14 +1313,11 @@
     "Description": "Setting the IPv4 preference can have latency and security benefits on private networks where IPv6 is not configured.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "32",
-        "Type": "DWord",
-        "OriginalValue": "0"
-      }
+    "InvokeScript": [
+      "\n      # DisabledComponents is a set of flags shared with Teredo - Disable and IPv6 - Disable, so only this tweak's flag (0x20) is changed\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -bor 0x20)\n      "
+    ],
+    "UndoScript": [
+      "\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -band (-bnot 0x20))\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/ipv46"
   },
@@ -1329,42 +1326,24 @@
     "Description": "Teredo network tunneling is an IPv6 feature that can cause additional latency, but may cause problems with some games.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "1",
-        "Type": "DWord",
-        "OriginalValue": "0"
-      }
-    ],
     "InvokeScript": [
-      "netsh interface teredo set state disabled"
+      "\n      # DisabledComponents is a set of flags shared with the two IPv6 tweaks, so only this tweak's flag (0x01, tunnel interfaces) is changed\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -bor 0x01)\n      netsh interface teredo set state disabled\n      "
     ],
     "UndoScript": [
-      "netsh interface teredo set state default"
+      "\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -band (-bnot 0x01))\n      netsh interface teredo set state default\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/teredo"
   },
   "WPFTweaksDisableIPv6": {
     "Content": "IPv6 - Disable",
-    "Description": "Disables IPv6.",
+    "Description": "Disables IPv6. Undo turns IPv6 fully back on, including the parts Teredo - Disable and IPv4 as Preferred turn off.",
     "category": "z__Advanced Tweaks - CAUTION",
     "panel": "1",
-    "registry": [
-      {
-        "Path": "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "Name": "DisabledComponents",
-        "Value": "255",
-        "Type": "DWord",
-        "OriginalValue": "0"
-      }
-    ],
     "InvokeScript": [
-      "Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "\n      # DisabledComponents is a set of flags; 0xFF turns off every IPv6 component, so it is added to the existing flags rather than replacing them\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -bor 0xFF)\n      Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6\n      "
     ],
     "UndoScript": [
-      "Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6"
+      "\n      $path = 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'\n      $current = [int](Get-ItemProperty -Path $path -Name DisabledComponents -ErrorAction SilentlyContinue).DisabledComponents\n      Set-ItemProperty -Path $path -Name DisabledComponents -Type DWord -Value ($current -band (-bnot 0xFF))\n      Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6\n      "
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/z--advanced-tweaks---caution/disableipv6"
   },
