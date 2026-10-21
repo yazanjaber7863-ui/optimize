@@ -13,7 +13,9 @@ function Invoke-WPFMyPCInfo {
     $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
     $gpus = @(Get-CimInstance Win32_VideoController | Where-Object { $_.Name -notmatch 'Parsec|Virtual|Remote|Basic Display' })
     $memory = @(Get-CimInstance Win32_PhysicalMemory)
-    $license = Get-CimInstance SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL AND Name LIKE 'Windows%'" | Select-Object -First 1
+    # Filtering on Windows' application ID lets the licensing service skip every other product;
+    # matching on Name made it load them all, which took over 10 seconds
+    $license = Get-CimInstance SoftwareLicensingProduct -Filter "ApplicationID='55c92734-d682-4d71-983e-d6ec3f16059f' AND PartialProductKey IS NOT NULL" -Property LicenseStatus, Name | Select-Object -First 1
     $displayVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -ErrorAction SilentlyContinue).DisplayVersion
 
     $uptime = (Get-Date) - $os.LastBootUpTime

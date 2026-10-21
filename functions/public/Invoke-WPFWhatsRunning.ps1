@@ -27,14 +27,23 @@ function Invoke-WPFWhatsRunning {
         foreach ($process in $_.Group) {
             if ($null -ne $process.CPU -and $first.ContainsKey($process.Id)) { $cpuSeconds += $process.CPU - $first[$process.Id] }
         }
-        # The description is the name people know, e.g. "Google Chrome" rather than "chrome"
-        $friendly = ($_.Group | Where-Object { $_.Description } | Select-Object -First 1).Description
         [pscustomobject]@{
-            Name = $(if ($friendly) { $friendly.Trim() } else { $_.Name })
+            Name = $_.Name
+            Group = $_.Group
             Count = $_.Count
             MemoryMB = ($_.Group | Measure-Object WorkingSet64 -Sum).Sum / 1MB
             CpuPercent = $cpuSeconds / $cores * 100
         }
+    }
+
+    $topMemory = @($byName | Sort-Object MemoryMB -Descending | Select-Object -First 8)
+    $busy = @($byName | Where-Object { $_.CpuPercent -ge 1 } | Sort-Object CpuPercent -Descending | Select-Object -First 5)
+
+    # The description is the name people know, e.g. "Google Chrome" rather than "chrome". Reading
+    # it opens each program's file, so it is done only for the apps that are shown.
+    foreach ($app in @($topMemory) + @($busy)) {
+        $friendly = ($app.Group | ForEach-Object { $_.Description } | Where-Object { $_ } | Select-Object -First 1)
+        if ($friendly) { $app.Name = $friendly.Trim() }
     }
 
     $rows = @(
@@ -42,14 +51,13 @@ function Invoke-WPFWhatsRunning {
         @{ Label = "In use"; Value = "{0:N1} GB of {1:N0} GB ({2}%)" -f $usedGB, $totalGB, $usedPercent; Status = $(if ($usedPercent -ge 90) { "Bad" } elseif ($usedPercent -ge 75) { "Warn" } else { "" }) }
         @{ Label = "Using the most memory" }
     )
-    foreach ($app in $byName | Sort-Object MemoryMB -Descending | Select-Object -First 8) {
+    foreach ($app in $topMemory) {
         $size = if ($app.MemoryMB -ge 1024) { "{0:N1} GB" -f ($app.MemoryMB / 1024) } else { "{0:N0} MB" -f $app.MemoryMB }
         $windows = if ($app.Count -gt 1) { " ($($app.Count) processes)" } else { "" }
         $rows += @{ Label = $app.Name; Value = "$size$windows"; Status = $(if ($app.MemoryMB -ge 2048) { "Warn" } else { "" }) }
     }
 
     $rows += @{ Label = "Using the most CPU right now" }
-    $busy = @($byName | Where-Object { $_.CpuPercent -ge 1 } | Sort-Object CpuPercent -Descending | Select-Object -First 5)
     if ($busy.Count -eq 0) {
         $rows += @{ Label = "Nothing busy"; Value = "Every app is under 1% CPU"; Status = "Good" }
     }
