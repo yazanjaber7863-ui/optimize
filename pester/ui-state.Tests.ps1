@@ -84,6 +84,8 @@ namespace System.Windows.Controls
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFGetInstalled.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFSelectedCheckboxesUpdate.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFToggleAllCategories.ps1")
 
     function Invoke-WPFRunspace {

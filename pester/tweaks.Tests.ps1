@@ -6,6 +6,8 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Measure-WinUtilStep.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilTweaks.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFtweaksbutton.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFundoall.ps1")
 

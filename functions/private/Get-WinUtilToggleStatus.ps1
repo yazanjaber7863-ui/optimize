@@ -5,7 +5,8 @@ Function Get-WinUtilToggleStatus {
         [switch]$StopOnReadError
     )
 
-    $ToggleSwitchReg = $sync.configs.tweaks.$ToggleSwitch.registry
+    # Values meant for other editions are never written here, so they cannot count against it
+    $ToggleSwitchReg = @($sync.configs.tweaks.$ToggleSwitch.registry | Where-Object { $_ -and (Test-WinUtilEditionSupported -Entry $_) })
 
     if (-not $BypassCache) {
         if ($null -eq $sync.ToggleStatusCache) {

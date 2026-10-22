@@ -6,6 +6,8 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Write-WinUtilLog.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilToggleStatus.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilTweaksStateReport.ps1")
     . (Join-Path $script:repoRoot "functions\private\Test-WinUtilPackageManager.ps1")

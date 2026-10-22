@@ -486,6 +486,7 @@ Describe "XAML and sync wiring" {
             "checkmarkrender",
             "warningrender",
             "InitializedTabs",
+            "windowsEdition",
             "AppCategoryChips",
             "SelectedAppCategories",
             "AppCategoryAutoExpanded",

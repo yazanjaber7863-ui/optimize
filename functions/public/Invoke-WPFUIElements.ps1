@@ -85,6 +85,11 @@ function Invoke-WPFUIElements {
             Checked     = $entryInfo.Checked
             ButtonWidth = $entryInfo.ButtonWidth
             GroupName   = $entryInfo.GroupName  # Added for RadioButton groupings
+            Editions    = $entryInfo.editions
+        }
+        # An entry this edition cannot use is still shown, greyed out, with the reason after its name
+        if (-not (Test-WinUtilEditionSupported -Entry $entryObject) -and $entryObject.Content -is [string]) {
+            $entryObject.Content = "$($entryObject.Content) $(Get-WinUtilEditionNote -Editions $entryObject.Editions -Short)"
         }
 
         if (-not $organizedData.ContainsKey($entryObject.Panel)) {
@@ -571,6 +576,20 @@ function Invoke-WPFUIElements {
                             [System.Object]$Sender = $args[0]
                             Invoke-WPFSelectedCheckboxesUpdate -type "Remove" -checkboxName $Sender.name
                         })
+                    }
+                }
+
+                if (-not (Test-WinUtilEditionSupported -Entry $entryInfo) -and $sync[$entryInfo.Name] -is [Windows.UIElement]) {
+                    $control = $sync[$entryInfo.Name]
+                    $control.ToolTip = Get-WinUtilEditionNote -Editions $entryInfo.Editions
+                    $control.Opacity = 0.45
+                    # The theme draws a disabled button solid and unreadable, so a button stays
+                    # clickable and explains itself (Invoke-WPFButtonAction); anything that can be
+                    # ticked is disabled, so no preset or click can select it
+                    if ($control -isnot [Windows.Controls.Button]) {
+                        $control.IsEnabled = $false
+                        # A disabled control shows no tooltip unless told to, and this one explains why
+                        [Windows.Controls.ToolTipService]::SetShowOnDisabled($control, $true)
                     }
                 }
             }

@@ -5,6 +5,8 @@
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilToggleStatus.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
 }
 
 Describe "Get-WinUtilToggleStatus" {

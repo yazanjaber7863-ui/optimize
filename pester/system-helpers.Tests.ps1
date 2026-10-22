@@ -7,6 +7,8 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\private\Invoke-WinUtilCurrentSystem.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilRegistry.ps1")
     . (Join-Path $script:repoRoot "functions\private\Set-WinUtilService.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFPanelAutologin.ps1")

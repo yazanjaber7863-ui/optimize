@@ -60,7 +60,8 @@ Function Invoke-WinUtilCurrentSystem {
 
             $Config = $psitem.Name
             $entry = $sync.configs.tweaks.$Config
-            $registryKeys = $entry.registry
+            # Values meant for other editions are never written here, so they cannot count against it
+            $registryKeys = @($entry.registry | Where-Object { $_ -and (Test-WinUtilEditionSupported -Entry $_) })
             $serviceKeys = $entry.service
             $entryType = $entry.Type
 

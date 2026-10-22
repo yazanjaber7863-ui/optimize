@@ -129,6 +129,13 @@ function Invoke-WPFButtonAction {
     if ($sync.configs.feature.$Button) {
         $buttonConfig = $sync.configs.feature.$Button
 
+        # On other editions the button is shown faded; clicking it explains why nothing happens
+        if (-not (Test-WinUtilEditionSupported -Entry $buttonConfig)) {
+            Show-WinUtilMessage -Title $buttonConfig.Content -Button "OK" -Icon "Information" -Message (
+                "$(Get-WinUtilEditionNote -Editions $buttonConfig.editions)`n`n$($buttonConfig.Description)") | Out-Null
+            return
+        }
+
         # If button has a function defined, call it
         if ($buttonConfig.function) {
             $functionName = $buttonConfig.function

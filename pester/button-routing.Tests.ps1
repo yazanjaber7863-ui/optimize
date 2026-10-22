@@ -5,6 +5,8 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFUpdatesdisable.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
 
     function Start-WinUtilJob {
         param([string]$Name, [scriptblock]$ScriptBlock, [hashtable]$Parameters)

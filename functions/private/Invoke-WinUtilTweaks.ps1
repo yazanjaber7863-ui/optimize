@@ -23,6 +23,15 @@ function Invoke-WinUtilTweaks {
 
     $action = if ($undo) { "Undo" } else { "Apply" }
     Write-WinUtilLog -Component "Tweaks" -Message "$action tweak: $CheckBox"
+
+    # A preset or an imported config can name a tweak this edition cannot use
+    $tweakEntry = $sync.configs.tweaks.$CheckBox
+    if (-not (Test-WinUtilEditionSupported -Entry $tweakEntry)) {
+        $note = Get-WinUtilEditionNote -Editions $tweakEntry.editions
+        Write-Warning "Skipped $($tweakEntry.Content): $note"
+        Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "Skipped $CheckBox for this edition: $note"
+        return
+    }
     # The counter lives in this runspace, so an error a concurrent job logs from its own
     # runspace cannot be charged to a toggle flipped on the UI thread
     $errorsBefore = [int]$global:WinUtilJobErrorCount
@@ -72,7 +81,8 @@ function Invoke-WinUtilTweaks {
         }
     }
     if ($sync.configs.tweaks.$CheckBox.registry) {
-        $sync.configs.tweaks.$CheckBox.registry | Where-Object { -not $psitem.Values } | ForEach-Object {
+        # Registry values can carry their own "editions", for settings only some editions read
+        $sync.configs.tweaks.$CheckBox.registry | Where-Object { -not $psitem.Values -and (Test-WinUtilEditionSupported -Entry $psitem) } | ForEach-Object {
             Set-WinUtilRegistry -Name $psitem.Name -Path $psitem.Path -Type $psitem.Type -Value $psitem.$($values.registry)
         }
     }

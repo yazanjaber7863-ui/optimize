@@ -12,6 +12,8 @@ BeforeAll {
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxInstall.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFAppxRemoval.ps1")
     . (Join-Path $script:repoRoot "functions\public\Invoke-WPFButton.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Test-WinUtilEditionSupported.ps1")
+    . (Join-Path $script:repoRoot "functions\private\Get-WinUtilEditionNote.ps1")
 
     $tokens = $null
     $parseErrors = $null

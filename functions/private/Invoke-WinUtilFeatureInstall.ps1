@@ -1,6 +1,15 @@
 function Invoke-WinUtilFeatureInstall ($CheckBox) {
     Write-WinUtilLog -Component "Feature" -Message "Applying feature action: $CheckBox"
 
+    # Hyper-V and Windows Sandbox, for example, do not exist on Home
+    $featureEntry = $sync.configs.feature.$CheckBox
+    if (-not (Test-WinUtilEditionSupported -Entry $featureEntry)) {
+        $note = Get-WinUtilEditionNote -Editions $featureEntry.editions
+        Write-Warning "Skipped $($featureEntry.Content): $note"
+        Write-WinUtilLog -Level "WARN" -Component "Feature" -Message "Skipped $CheckBox for this edition: $note"
+        return
+    }
+
     if ($sync.configs.feature.$CheckBox.feature) {
         foreach ($feature in $sync.configs.feature.$CheckBox.feature) {
             Write-Host "Installing $feature"

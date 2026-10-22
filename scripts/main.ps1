@@ -20,6 +20,10 @@ $sync.configs.appxHashtable = @{}
 $sync.configs.appx.PSObject.Properties | ForEach-Object {
     $sync.configs.appxHashtable[$_.Name] = $_.Value
 }
+# Entries can be limited to some editions ("editions" in the config); see Test-WinUtilEditionSupported
+$sync.windowsEdition = Get-WinUtilWindowsEdition
+Write-Host "  Windows edition: $($sync.windowsEdition)`n" -ForegroundColor DarkGray
+
 $sync.preferences.theme = "Auto"
 $sync.preferences.packagemanager = "Winget"
 
