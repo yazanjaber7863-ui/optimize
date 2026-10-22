@@ -151,6 +151,16 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFDiskHealth"
   },
+  "WPFTemperatures": {
+    "tab": "Health",
+    "Content": "Temperatures",
+    "Description": "Shows how hot your graphics card and drives are, with the GPU's load, fan and how far it is from slowing itself down. Warns when something runs hot.",
+    "category": "Health",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFTemperatures"
+  },
   "WPFPingTest": {
     "tab": "Gaming",
     "Content": "Ping Test",
@@ -251,6 +261,26 @@
     "function": "Invoke-WPFRemoteDesktop",
     "editions": ["Pro", "Education", "Enterprise"]
   },
+  "WPFBackupDrivers": {
+    "tab": "Backup",
+    "Content": "Backup Drivers",
+    "Description": "Saves every driver installed on this PC (Wi-Fi, audio, chipset, GPU...) to a folder. After a Windows reinstall, Restore Drivers puts them all back at once. Can be a few GB, mostly the graphics driver.",
+    "category": "Drivers",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFBackupDrivers"
+  },
+  "WPFRestoreDrivers": {
+    "tab": "Backup",
+    "Content": "Restore Drivers",
+    "Description": "Installs every driver from a folder made by Backup Drivers.",
+    "category": "Drivers",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFRestoreDrivers"
+  },
   "WPFShowChanges": {
     "tab": "Maintenance",
     "Content": "See What Optimize Changed",
@@ -260,6 +290,16 @@
     "Type": "Button",
     "ButtonWidth": "300",
     "function": "Invoke-WPFShowChanges"
+  },
+  "WPFReapplyChanges": {
+    "tab": "Maintenance",
+    "Content": "Reapply Optimize Changes",
+    "Description": "Windows updates sometimes put settings back. This sets every Optimize change that was changed back again, using the values Optimize saved.",
+    "category": "Undo Changes",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFReapplyChanges"
   },
   "WPFUndoAllChanges": {
     "tab": "Maintenance",
