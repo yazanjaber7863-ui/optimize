@@ -3,6 +3,9 @@
 #===========================================================================
 
 BeforeAll {
+    # The change journal is tested in change-journal.Tests.ps1; here it must neither fail nor write
+    function Register-WinUtilChange { param($Kind, $Key, $Label, $Before, $After) }
+    function Get-WinUtilRegistryState { param($Path, $Name) @{ Exists = $false; Value = $null; Type = $null } }
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     . (Join-Path $script:repoRoot "functions\private\Get-WinUtilWindowsEdition.ps1")
@@ -77,6 +80,7 @@ Describe "Edition checks when running" {
         Mock Set-WinUtilRegistry { }
         Mock Write-Warning { }
         Mock Enable-WindowsOptionalFeature { }
+        Mock Get-WindowsOptionalFeature { [pscustomobject]@{ State = "Disabled" } }
         $script:sync = [Hashtable]::Synchronized(@{
             windowsEdition = "Home"
             configs = @{

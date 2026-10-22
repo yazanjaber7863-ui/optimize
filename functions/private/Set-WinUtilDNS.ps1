@@ -60,6 +60,12 @@ function Set-WinUtilDNS {
         Foreach ($Adapter in $Adapters) {
             $interfaceParams = "$dnscacheBase\$($Adapter.InterfaceGuid)"
 
+            # Servers typed in by hand live in NameServer; an empty one means DNS comes from DHCP
+            $static4 = "$((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$($Adapter.InterfaceGuid)" -Name NameServer -ErrorAction SilentlyContinue).NameServer)"
+            $static6 = "$((Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\Interfaces\$($Adapter.InterfaceGuid)" -Name NameServer -ErrorAction SilentlyContinue).NameServer)"
+            $after = if ($DNSProvider -eq "DHCP") { @{ Static4 = ""; Static6 = "" } } else { @{ Provider = "$DNSProvider" } }
+            Register-WinUtilChange -Kind "Dns" -Key "$($Adapter.InterfaceGuid)" -Label "DNS on $($Adapter.Name)" -Before @{ Static4 = $static4; Static6 = $static6 } -After $after
+
             if($DNSProvider -eq "DHCP") {
                 Write-WinUtilLog -Component "DNS" -Message "Resetting DNS to DHCP on adapter $($Adapter.Name) (ifIndex: $($Adapter.ifIndex))."
                 Set-DnsClientServerAddress -InterfaceIndex $Adapter.ifIndex -ResetServerAddresses

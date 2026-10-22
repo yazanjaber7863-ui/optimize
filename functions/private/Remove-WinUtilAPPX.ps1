@@ -25,6 +25,8 @@ function Remove-WinUtilAPPX {
         foreach ($pkg in $pkgs) {
             try {
                 Remove-AppxPackage -Package $pkg.PackageFullName -AllUsers -ErrorAction Stop
+                # Recorded so the report can list it; a removed app comes back from the Store or winget
+                Register-WinUtilChange -Kind "Appx" -Key $pkg.Name -Label "App $($pkg.Name)" -Before @{ Installed = $true } -After @{ Installed = $false }
             }
             catch {
                 Write-WinUtilLog -Level "ERROR" -Component "AppX" -Message "Failed to remove AppX package $($pkg.PackageFullName): $($_.Exception.Message)"

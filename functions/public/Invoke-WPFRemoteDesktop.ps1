@@ -23,7 +23,8 @@ function Invoke-WPFRemoteDesktop {
             "Remote Desktop is ON for this PC.`n`nTurn it off?`n`n(No shows how to connect instead.)")
         if ("$answer" -eq "Yes") {
             Step-WinUtilJob -Status "Turning off Remote Desktop" -State "Indeterminate"
-            Set-ItemProperty -Path $terminalServer -Name fDenyTSConnections -Type DWord -Value 1
+            Set-WinUtilRegistry -Path $terminalServer -Name fDenyTSConnections -Type DWord -Value 1
+            Register-WinUtilChange -Kind "Firewall" -Key $firewallGroup -Label "Remote Desktop firewall rules" -Before @{ Enabled = $true } -After @{ Enabled = $false }
             Disable-NetFirewallRule -Group $firewallGroup -ErrorAction SilentlyContinue
             Write-WinUtilLog -Component "RemoteDesktop" -Message "Remote Desktop turned off"
             Write-Host "Remote Desktop turned off." -ForegroundColor Yellow
@@ -40,14 +41,16 @@ function Invoke-WPFRemoteDesktop {
 
         Step-WinUtilJob -Status "Turning on Remote Desktop" -State "Indeterminate"
         Write-WinUtilLog -Component "RemoteDesktop" -Message "Turning on Remote Desktop"
-        Set-ItemProperty -Path $terminalServer -Name fDenyTSConnections -Type DWord -Value 0
+        Set-WinUtilRegistry -Path $terminalServer -Name fDenyTSConnections -Type DWord -Value 0
         # Network Level Authentication: the password is checked before a session is created
-        Set-ItemProperty -Path "$terminalServer\WinStations\RDP-Tcp" -Name UserAuthentication -Type DWord -Value 1
+        Set-WinUtilRegistry -Path "$terminalServer\WinStations\RDP-Tcp" -Name UserAuthentication -Type DWord -Value 1
+        $firewallWasOn = @(Get-NetFirewallRule -Group $firewallGroup -ErrorAction SilentlyContinue | Where-Object { "$($_.Enabled)" -ne "True" }).Count -eq 0
+        Register-WinUtilChange -Kind "Firewall" -Key $firewallGroup -Label "Remote Desktop firewall rules" -Before @{ Enabled = $firewallWasOn } -After @{ Enabled = $true }
         Enable-NetFirewallRule -Group $firewallGroup -ErrorAction Stop
 
         $passwordLess = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PasswordLess\Device"
         if ((Get-ItemProperty -Path $passwordLess -Name DevicePasswordLessBuildVersion -ErrorAction SilentlyContinue).DevicePasswordLessBuildVersion -eq 2) {
-            Set-ItemProperty -Path $passwordLess -Name DevicePasswordLessBuildVersion -Type DWord -Value 0
+            Set-WinUtilRegistry -Path $passwordLess -Name DevicePasswordLessBuildVersion -Type DWord -Value 0
             Write-WinUtilLog -Component "RemoteDesktop" -Message "Turned off Windows Hello-only sign-in so passwords work"
         }
         Write-Host "Remote Desktop turned on." -ForegroundColor Green

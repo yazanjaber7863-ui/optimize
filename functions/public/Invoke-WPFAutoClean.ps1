@@ -17,6 +17,7 @@ function Invoke-WPFAutoClean {
         $answer = Show-WinUtilMessage -Message "Weekly Auto-Clean is ON (every Sunday at 12:00).`n`nTurn it off?" -Title "Weekly Auto-Clean" -Button "YesNo" -Icon "Question"
         if ("$answer" -eq "Yes") {
             Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+            Register-WinUtilChange -Kind "Task" -Key $taskName -Label "Scheduled task $taskName" -Before @{ Exists = $true } -After @{ Exists = $false }
             Write-Host "Weekly Auto-Clean turned off." -ForegroundColor Yellow
             Write-WinUtilLog -Component "AutoClean" -Message "Weekly clean task removed"
         }
@@ -42,6 +43,7 @@ dism.exe /Online /Cleanup-Image /StartComponentCleanup /Quiet
     $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopIfGoingOnBatteries -AllowStartIfOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 2)
     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
     Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description "Created by Optimize: deletes temp files and old Windows Update files every week." | Out-Null
+    Register-WinUtilChange -Kind "Task" -Key $taskName -Label "Scheduled task $taskName" -Before @{ Exists = $false } -After @{ Exists = $true }
 
     Write-Host "Weekly Auto-Clean turned on: every Sunday at 12:00." -ForegroundColor Green
     Write-WinUtilLog -Component "AutoClean" -Message "Weekly clean task created"

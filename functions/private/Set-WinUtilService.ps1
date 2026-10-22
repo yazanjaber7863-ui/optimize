@@ -31,6 +31,8 @@ Function Set-WinUtilService {
             return
         }
 
+        Register-WinUtilChange -Kind "Service" -Key $Name -Label "Service $Name" -Before @{ StartType = "$($service.StartType)" } -After @{ StartType = "$StartupType" }
+
         # Service exists, proceed with changing properties -- while handling auto delayed start for PWSH 5
         if (($PSVersionTable.PSVersion.Major -lt 7) -and ($StartupType -eq "AutomaticDelayedStart")) {
             sc.exe config $Name start= delayed-auto

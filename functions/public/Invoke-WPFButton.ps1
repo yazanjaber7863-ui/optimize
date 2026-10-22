@@ -140,7 +140,13 @@ function Invoke-WPFButtonAction {
         if ($buttonConfig.function) {
             $functionName = $buttonConfig.function
             if (Get-Command $functionName -ErrorAction SilentlyContinue) {
-                & $functionName
+                # Changes the button makes are recorded in the change journal under its name
+                $global:WinUtilChangeSource = "$($buttonConfig.Content)"
+                try {
+                    & $functionName
+                } finally {
+                    $global:WinUtilChangeSource = $null
+                }
                 return
             }
         }

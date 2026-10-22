@@ -250,5 +250,25 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFRemoteDesktop",
     "editions": ["Pro", "Education", "Enterprise"]
+  },
+  "WPFShowChanges": {
+    "tab": "Maintenance",
+    "Content": "See What Optimize Changed",
+    "Description": "Lists every setting Optimize has changed on this PC, grouped by tweak, and marks any that a Windows update has changed back. The list is kept in C:\\ProgramData\\Optimize\\changes.json.",
+    "category": "Undo Changes",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFShowChanges"
+  },
+  "WPFUndoAllChanges": {
+    "tab": "Maintenance",
+    "Content": "Undo All Optimize Changes",
+    "Description": "Puts every setting Optimize changed back to what this PC had before, not just Windows' defaults. Removed apps are not reinstalled. Needs a restart.",
+    "category": "Undo Changes",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFUndoAllChanges"
   }
 }

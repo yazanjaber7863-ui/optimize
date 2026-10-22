@@ -30,6 +30,11 @@ function Set-WinUtilRegistry {
     try {
         if(!(Test-Path 'HKU:\')) {New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS | Out-Null}
 
+        # Written down before the change, so Undo All Optimize Changes can put the old value back
+        $before = Get-WinUtilRegistryState -Path $Path -Name $Name
+        $after = if ($Value -eq "<RemoveEntry>") { @{ Exists = $false; Value = $null; Type = $null } } else { @{ Exists = $true; Value = $Value; Type = "$Type" } }
+        Register-WinUtilChange -Kind "Registry" -Key "$Path\$Name" -Before $before -After $after
+
         If (!(Test-Path $Path)) {
             Write-Host "$Path was not found. Creating..."
             Write-WinUtilLog -Component "Registry" -Message "Creating registry path: $Path"

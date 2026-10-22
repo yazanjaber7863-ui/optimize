@@ -487,6 +487,7 @@ Describe "XAML and sync wiring" {
             "warningrender",
             "InitializedTabs",
             "windowsEdition",
+            "changeJournalPath",
             "AppCategoryChips",
             "SelectedAppCategories",
             "AppCategoryAutoExpanded",

@@ -18,6 +18,7 @@ function Invoke-WPFGamingMode {
     Step-WinUtilJob -Status "Switching to the High Performance power plan (1/3)" -Percent 0
     # Ultimate Performance is a step above High Performance, so it is kept when already active
     $active = powercfg.exe /getactivescheme
+    $previousPlan = ([regex]::Match("$active", '[A-Fa-f0-9-]{36}')).Value
     if ("$active" -match 'Ultimate Performance') {
         Write-WinUtilLog -Component "Gaming" -Message "Keeping the active Ultimate Performance power plan"
     } else {
@@ -34,6 +35,10 @@ function Invoke-WPFGamingMode {
         if ($LASTEXITCODE -ne 0) {
             throw "powercfg could not activate the High Performance power plan (exit code $LASTEXITCODE)."
         }
+    }
+    $currentPlan = ([regex]::Match("$(powercfg.exe /getactivescheme)", '[A-Fa-f0-9-]{36}')).Value
+    if ($previousPlan -and $currentPlan) {
+        Register-WinUtilChange -Kind "PowerPlan" -Key "ActivePowerPlan" -Label "Power plan" -Before @{ Guid = $previousPlan } -After @{ Guid = $currentPlan }
     }
 
     Step-WinUtilJob -Status "Turning on Game Mode (2/3)" -Percent 33

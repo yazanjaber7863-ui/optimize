@@ -18,15 +18,16 @@ function Invoke-WPFFixClock {
 
     Step-WinUtilJob -Status "Setting time zone (1/2)" -Percent 0
     Write-WinUtilLog -Component "Clock" -Message "Setting time zone to $zoneId"
+    Register-WinUtilChange -Kind "TimeZone" -Key "TimeZone" -Label "Time zone" -Before @{ Id = (Get-TimeZone).Id } -After @{ Id = $zoneId }
     Set-TimeZone -Id $zoneId -ErrorAction Stop
 
     # Automatic time zone detection would otherwise override the user's choice
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tzautoupdate" -Name "Start" -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Set-WinUtilRegistry -Path "HKLM:\SYSTEM\CurrentControlSet\Services\tzautoupdate" -Name "Start" -Type DWord -Value 4
 
     Step-WinUtilJob -Status "Syncing with internet time (2/2)" -Percent 50
     Write-WinUtilLog -Component "Clock" -Message "Turning on internet time sync and resyncing"
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" -Name "Type" -Value "NTP" -ErrorAction SilentlyContinue
-    Set-Service -Name W32Time -StartupType Automatic
+    Set-WinUtilRegistry -Path "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" -Name "Type" -Type String -Value "NTP"
+    Set-WinUtilService -Name W32Time -StartupType Automatic
     Start-Service -Name W32Time -ErrorAction SilentlyContinue
     w32tm.exe /config /update | Out-Null
 

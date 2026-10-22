@@ -32,6 +32,14 @@ function Invoke-WinUtilTweaks {
         Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "Skipped $CheckBox for this edition: $note"
         return
     }
+
+    # Every change below is recorded in the change journal under this tweak's name
+    $global:WinUtilChangeSource = "$($tweakEntry.Content)"
+    # A script's effects cannot be read back, so the journal notes the tweak itself and Undo All
+    # runs its UndoScript
+    if ($tweakEntry.InvokeScript -and $tweakEntry.UndoScript) {
+        Register-WinUtilChange -Kind "Tweak" -Key $CheckBox -Label "$($tweakEntry.Content)" -Before @{ Applied = $false } -After @{ Applied = (-not $undo) }
+    }
     # The counter lives in this runspace, so an error a concurrent job logs from its own
     # runspace cannot be charged to a toggle flipped on the UI thread
     $errorsBefore = [int]$global:WinUtilJobErrorCount
@@ -101,6 +109,7 @@ function Invoke-WinUtilTweaks {
             Remove-WinUtilProvisionedAPPX -PackageList $sync.configs.tweaks.$CheckBox.appx
         }
     }
+    $global:WinUtilChangeSource = $null
     $errorCount = [int]$global:WinUtilJobErrorCount - $errorsBefore
     if ($errorCount -gt 0) {
         Write-WinUtilLog -Level "WARN" -Component "Tweaks" -Message "$action tweak finished with $errorCount error(s): $CheckBox"

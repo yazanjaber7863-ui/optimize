@@ -14,6 +14,14 @@ function Invoke-WinUtilFeatureInstall ($CheckBox) {
         foreach ($feature in $sync.configs.feature.$CheckBox.feature) {
             Write-Host "Installing $feature"
             Write-WinUtilLog -Component "Feature" -Message "Enabling Windows optional feature: $feature"
+            # Only recorded when the old state can be read: guessing "off" would let Undo All turn
+            # off a feature that was already on
+            try {
+                $state = "$((Get-WindowsOptionalFeature -Online -FeatureName $feature -ErrorAction Stop).State)"
+                Register-WinUtilChange -Kind "Feature" -Key $feature -Label "Windows feature $feature" -Before @{ Enabled = ($state -eq "Enabled") } -After @{ Enabled = $true }
+            } catch {
+                Write-WinUtilLog -Level "WARN" -Component "Feature" -Message "Could not read the state of $feature, so it is not in the change journal: $($_.Exception.Message)"
+            }
             Enable-WindowsOptionalFeature -Online -FeatureName $feature -All -NoRestart -ErrorAction Stop
             Write-WinUtilLog -Component "Feature" -Message "Enabled Windows optional feature: $feature"
         }

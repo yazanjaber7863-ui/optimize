@@ -18,8 +18,6 @@ function Set-WinUtilStartupApp {
         $value = [byte[]](@(3, 0, 0, 0) + [BitConverter]::GetBytes((Get-Date).ToFileTime()))
     }
 
-    if (-not (Test-Path -Path $Entry.ApprovedPath)) {
-        $null = New-Item -Path $Entry.ApprovedPath -Force
-    }
-    Set-ItemProperty -Path $Entry.ApprovedPath -Name $Entry.ApprovedName -Value $value -Type Binary
+    # Through Set-WinUtilRegistry so the change journal keeps the old on/off state
+    Set-WinUtilRegistry -Path $Entry.ApprovedPath -Name $Entry.ApprovedName -Type Binary -Value $value
 }

@@ -3,6 +3,9 @@
 #===========================================================================
 
 BeforeAll {
+    # The change journal is tested in change-journal.Tests.ps1; here it must neither fail nor write
+    function Register-WinUtilChange { param($Kind, $Key, $Label, $Before, $After) }
+    function Get-WinUtilRegistryState { param($Path, $Name) @{ Exists = $false; Value = $null; Type = $null } }
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     function Get-NetAdapter { }

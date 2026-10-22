@@ -22,6 +22,7 @@ function Invoke-WPFRenamePC {
     Step-WinUtilJob -Status "Renaming the PC to $newName" -State "Indeterminate"
     Write-WinUtilLog -Component "RenamePC" -Message "Renaming $env:COMPUTERNAME to $newName"
     Rename-Computer -NewName $newName -Force -ErrorAction Stop
+    Register-WinUtilChange -Kind "ComputerName" -Key "ComputerName" -Label "PC name" -Before @{ Name = $env:COMPUTERNAME } -After @{ Name = $newName }
     Write-Host "PC renamed to $newName. It takes effect after a restart." -ForegroundColor Green
 
     Request-WinUtilRestart -Message "The PC will be called $newName after a restart.`n`nRestart now?" -Reason "Renaming the PC to $newName."
