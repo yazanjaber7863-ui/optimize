@@ -8,7 +8,7 @@
 
 param (
     [string]$Config,
-    [ValidateSet("MySetup", "Advanced", "FullSetup", "")]
+    [ValidateSet("Recommended", "MySetup", "Advanced", "FullSetup", "")]
     [string]$Preset,
     [switch]$Offline
 )

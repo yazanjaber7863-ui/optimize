@@ -170,6 +170,7 @@ function Invoke-WPFButtonAction {
         "WPFInstallUpgrade" {Invoke-WPFInstallUpgrade}
         "WPFCollapseAllCategories" {Invoke-WPFToggleAllCategories -Action "Collapse"}
         "WPFExpandAllCategories" {Invoke-WPFToggleAllCategories -Action "Expand"}
+        "WPFRecommended" {Invoke-WPFPresets "Recommended" -checkboxfilterpattern "WPFTweak*"}
         "WPFMySetup" {Invoke-WPFPresets "MySetup" -checkboxfilterpattern "WPFTweak*"}
         "WPFAdvanced" {Invoke-WPFPresets "Advanced" -checkboxfilterpattern "WPFTweak*"}
         "WPFClearTweaksSelection" {Invoke-WPFPresets -imported $true -checkboxfilterpattern "WPFTweak*"}
@@ -179,9 +180,9 @@ function Invoke-WPFButtonAction {
         "WPFAddUltPerf" {Invoke-WPFUltimatePerformance -Enable}
         "WPFRemoveUltPerf" {Invoke-WPFUltimatePerformance}
         "WPFundoall" {Invoke-WPFundoall}
-        "WPFUpdatesdefault" {Invoke-WPFUpdatesdefault}
-        "WPFUpdatesdisable" {Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed}
-        "WPFUpdatessecurity" {Invoke-WPFUpdatessecurity}
+        "WPFUpdatesdefault" { Invoke-WinUtilUpdatesTracked -Label "Windows Update - Restore Defaults" { Invoke-WPFUpdatesdefault } }
+        "WPFUpdatesdisable" { Invoke-WinUtilUpdatesTracked -Label "Windows Update - Disable" { Invoke-WPFUpdatesdisable -Confirmed:$UpdatesDisableConfirmed } }
+        "WPFUpdatessecurity" { Invoke-WinUtilUpdatesTracked -Label "Windows Update - Recommended" { Invoke-WPFUpdatessecurity } }
         "WPFGetInstalled" {Invoke-WPFGetInstalled -CheckBox "winget"}
         "WPFGetInstalledTweaks" {Invoke-WPFGetInstalled -CheckBox "tweaks"}
         "WPFAppxRemoval" {Invoke-WPFTab "WPFTab6BT"}

@@ -1,4 +1,17 @@
 {
+  "Recommended": [
+    "WPFTweaksRestorePoint",
+    "WPFTweaksTelemetry",
+    "WPFTweaksActivity",
+    "WPFTweaksLocation",
+    "WPFTweaksDeliveryOptimization",
+    "WPFTweaksEndTaskOnTaskbar",
+    "WPFTweaksPreventDeviceMetadataFromNetwork",
+    "WPFTweaksWPBT",
+    "WPFTweaksDeleteTempFiles",
+    "WPFTweaksDisableStoreSearch",
+    "WPFTweaksEdgeDebloat"
+  ],
   "MySetup": [
     "WPFTweaksRestorePoint",
     "WPFTweaksActivity",

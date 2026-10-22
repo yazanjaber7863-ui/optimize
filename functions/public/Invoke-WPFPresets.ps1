@@ -43,6 +43,12 @@ function Invoke-WPFPresets {
         default {}
     }
 
+    # A preset is shared by every edition; what this one cannot use is left unticked
+    $CheckBoxesToCheck = @($CheckBoxesToCheck | Where-Object {
+        $entry = if ($sync.configs.tweaks.$_) { $sync.configs.tweaks.$_ } else { $sync.configs.feature.$_ }
+        Test-WinUtilEditionSupported -Entry $entry
+    })
+
     if ($preset) {
         Update-WinUtilSelections -flatJson $CheckBoxesToCheck
     }

@@ -199,6 +199,7 @@ Describe "XAML document" {
             "gamingpanel",
             "maintenancepanel",
             "backuppanel",
+            "WPFRecommended",
             "WPFMySetup",
             "WPFAdvanced",
             "WPFClearTweaksSelection",

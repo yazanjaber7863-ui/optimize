@@ -385,6 +385,11 @@ function Start-WinUtilUserInterface {
         $NavLogoPanel.Children.Insert(0, (Invoke-WinUtilAssets -Type "logo" -Size 28))
     }
 
+    # The Recommended preset adapts to the edition, so its button says which one it is for
+    if ($sync.WPFRecommended -and $sync.windowsEdition -and $sync.windowsEdition -ne "Unknown") {
+        $sync.WPFRecommended.Content = " $([char]0x2605) Recommended for $($sync.windowsEdition) "
+    }
+
     $sync["Form"].Add_Activated({
         Set-WinUtilTaskbaritem -overlay "logo"
     })
