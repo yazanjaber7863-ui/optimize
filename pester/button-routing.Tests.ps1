@@ -21,6 +21,11 @@ BeforeAll {
         param($ErrorRecord, $Component, $Context)
     }
     function Invoke-WPFFeatureInstall { }
+    # The change journal wrapper is tested in change-journal.Tests.ps1; here it just runs the profile
+    function Invoke-WinUtilUpdatesTracked {
+        param([string]$Label, [Parameter(Position = 0)] [scriptblock]$ScriptBlock)
+        & $ScriptBlock
+    }
 }
 
 Describe "Work button preflight" {

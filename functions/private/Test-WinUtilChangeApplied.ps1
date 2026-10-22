@@ -30,6 +30,11 @@ function Test-WinUtilChangeApplied {
             "Appx" { return -not (Get-AppxPackage -Name $Record.Key -AllUsers -ErrorAction SilentlyContinue) }
             "PowerPlan" { return "$(powercfg.exe /getactivescheme)" -match [regex]::Escape($after.Guid) }
             "Task" { return [bool](Get-ScheduledTask -TaskName $Record.Key -ErrorAction SilentlyContinue) -eq [bool]$after.Exists }
+            "TaskState" {
+                $split = $Record.Key.LastIndexOf('\')
+                $task = Get-ScheduledTask -TaskPath $Record.Key.Substring(0, $split + 1) -TaskName $Record.Key.Substring($split + 1) -ErrorAction Stop
+                return ("$($task.State)" -ne "Disabled") -eq [bool]$after.Enabled
+            }
             "Firewall" {
                 $off = @(Get-NetFirewallRule -Group $Record.Key -ErrorAction Stop | Where-Object { "$($_.Enabled)" -ne "True" }).Count
                 return ($off -eq 0) -eq [bool]$after.Enabled

@@ -13,8 +13,8 @@ function Register-WinUtilChange {
         things back is not itself recorded.
 
     .PARAMETER Kind
-        Registry, Service, Tweak, Feature, Appx, PowerPlan, Dns, Task, Firewall, TimeZone or
-        ComputerName
+        Registry, Service, Tweak, Feature, Appx, PowerPlan, Dns, Task (created or deleted),
+        TaskState (turned on or off), Firewall, TimeZone or ComputerName
 
     .PARAMETER Key
         What was changed, unique within its kind, e.g. "HKCU:\...\Value" for a registry value

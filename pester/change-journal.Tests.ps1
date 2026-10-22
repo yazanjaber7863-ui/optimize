@@ -6,7 +6,8 @@ BeforeAll {
     $script:repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
     foreach ($name in "Update-WinUtilChangeJournal", "Register-WinUtilChange", "Get-WinUtilStateText",
-        "Get-WinUtilRegistryState", "Restore-WinUtilChange", "Test-WinUtilChangeApplied", "Set-WinUtilRegistry") {
+        "Get-WinUtilRegistryState", "Restore-WinUtilChange", "Test-WinUtilChangeApplied", "Set-WinUtilRegistry",
+        "Invoke-WinUtilTrackedChange") {
         . (Join-Path $script:repoRoot "functions\private\$name.ps1")
     }
 
@@ -138,6 +139,40 @@ Describe "Registry changes round trip" {
 
         $record = @(Update-WinUtilChangeJournal)[0]
         Test-WinUtilChangeApplied -Record $record | Should -BeFalse
+    }
+
+    It "reapplies a value that was changed back" {
+        Set-WinUtilRegistry -Path $script:testKey -Name "Existing" -Type DWord -Value 0
+        Set-ItemProperty -Path $script:testKey -Name "Existing" -Value 5
+        $record = @(Update-WinUtilChangeJournal)[0]
+
+        Restore-WinUtilChange -Record $record -To "After" | Should -BeTrue
+
+        (Get-ItemProperty -Path $script:testKey).Existing | Should -Be 0
+        Test-WinUtilChangeApplied -Record $record | Should -BeTrue
+    }
+
+    It "records what a block changed directly, without Set-WinUtilRegistry" {
+        Invoke-WinUtilTrackedChange -RegistryKeys @($script:testKey) -ScriptBlock {
+            Set-ItemProperty -Path $script:testKey -Name "Existing" -Value 7
+            New-ItemProperty -Path $script:testKey -Name "Added" -PropertyType DWord -Value 1 | Out-Null
+            Remove-ItemProperty -Path $script:testKey -Name "Bytes"
+        }
+
+        $changes = @(Update-WinUtilChangeJournal)
+        $changes.Count | Should -Be 3
+        ($changes | Where-Object Key -like "*\Existing").Before.Value | Should -Be 5
+        ($changes | Where-Object Key -like "*\Added").Before.Exists | Should -BeFalse
+        ($changes | Where-Object Key -like "*\Bytes").After.Exists | Should -BeFalse
+    }
+
+    It "still records what a block changed when the block fails" {
+        { Invoke-WinUtilTrackedChange -RegistryKeys @($script:testKey) -ScriptBlock {
+            Set-ItemProperty -Path $script:testKey -Name "Existing" -Value 7
+            throw "failed halfway"
+        } } | Should -Throw "failed halfway"
+
+        @(Update-WinUtilChangeJournal).Count | Should -Be 1
     }
 
     It "removes a value Optimize added when the change is undone" {

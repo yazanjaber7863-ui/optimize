@@ -64,7 +64,7 @@ function Invoke-WPFShowChanges {
 
     $note = "The full list is in $path. Undo All Optimize Changes puts every one of these back the way it was before Optimize."
     if ($resetTotal -gt 0) {
-        $note = "Something, often a Windows update, changed $resetTotal setting(s) back. Run the same tweaks again to reapply them. $note"
+        $note = "Something, often a Windows update, changed $resetTotal setting(s) back. Reapply Optimize Changes sets them again. $note"
     }
     Show-WinUtilReport -Title "What Optimize Changed" -Rows $rows -Note $note
 }
