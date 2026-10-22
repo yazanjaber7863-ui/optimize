@@ -54,6 +54,11 @@ function Invoke-WPFUpdatessecurity {
     New-Item -Path $windowsUpdatePolicyPath -Force
     Set-ItemProperty -Path $windowsUpdatePolicyPath -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
 
+    # Deferrals are Windows Update for Business policies, which Home does not have. They are
+    # still written so they apply if the PC is upgraded, but Home users should know.
+    if ($sync.windowsEdition -eq "Home") {
+        Write-Warning "Windows Home ignores update deferrals. Driver updates are still excluded; to hold back updates on Home, use Pause updates in Settings > Windows Update."
+    }
     Write-Host "Deferring feature updates by 365 days and quality updates by 4 days..."
     Write-WinUtilLog -Component "Updates" -Message "Deferring feature updates by 365 days and quality updates by 4 days."
 

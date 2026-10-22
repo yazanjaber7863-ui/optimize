@@ -428,7 +428,7 @@
   },
   "WPFTweaksTelemetry": {
     "Content": "⭐ Telemetry - Disable",
-    "Description": "Turns off as much Microsoft data collection as Windows allows: diagnostic data set to the lowest level (fully off on Education/Enterprise, Required-only on Home/Pro), the telemetry services and scheduled tasks, error reporting, ad ID, typing/inking collection, activity history and Microsoft's suggested-app installs. Windows Update, the Store and Defender keep working.",
+    "Description": "Turns off as much Microsoft data collection as Windows allows: diagnostic data set to the lowest level (fully off on Education/Enterprise, Required-only on Home/Pro), the telemetry services and scheduled tasks, error reporting, ad ID, typing/inking collection, activity history and Microsoft's suggested-app installs (by policy on Education/Enterprise; on Home/Pro, which ignore that policy, through your own account's settings instead). Windows Update, the Store and Defender keep working.",
     "category": "Essential Tweaks",
     "panel": "1",
     "registry": [
@@ -578,6 +578,46 @@
         "Value": "1",
         "Type": "DWord",
         "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "SilentInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "editions": ["Home", "Pro"]
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "PreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "editions": ["Home", "Pro"]
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "OemPreInstalledAppsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "editions": ["Home", "Pro"]
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "SystemPaneSuggestionsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "editions": ["Home", "Pro"]
+      },
+      {
+        "Path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "Name": "SubscribedContent-338388Enabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "1",
+        "editions": ["Home", "Pro"]
       },
       {
         "Path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\CloudContent",
