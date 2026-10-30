@@ -182,6 +182,185 @@
     ],
     "link": "https://winutil.christitus.com/code-reference/tweaks/essential-tweaks/services"
   },
+  "WPFTweaksChromeDebloat": {
+    "Content": "Google Chrome - Debloat",
+    "Description": "Turns off Chrome's usage reports, Privacy Sandbox ad tracking and its prompt, shopping and promo tabs, and Chrome running in the background after you close it. Chrome will say it is 'managed by your organization', which is how it shows these settings are set.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "MetricsReportingEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "ChromeCleanupReportingEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "UserFeedbackAllowed",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "UrlKeyedAnonymizedDataCollectionEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "PromotionalTabsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "ShoppingListEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "PrivacySandboxPromptEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "PrivacySandboxAdTopicsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "PrivacySandboxSiteEnabledAdsEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "PrivacySandboxAdMeasurementEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Google\\Chrome",
+        "Name": "BackgroundModeEnabled",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://chromeenterprise.google/policies/"
+  },
+  "WPFTweaksFirefoxDebloat": {
+    "Content": "Mozilla Firefox - Debloat",
+    "Description": "Turns off Firefox telemetry and studies, Pocket, sponsored shortcuts and stories on the new tab page, sponsored suggestions in the address bar, and the extension and feature recommendation pop-ups.",
+    "category": "z__Advanced Tweaks - CAUTION",
+    "panel": "1",
+    "registry": [
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "Name": "DisableTelemetry",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "Name": "DisableFirefoxStudies",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "Name": "DisablePocket",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "Name": "DisableFeedbackCommands",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox",
+        "Name": "DontCheckDefaultBrowser",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\FirefoxHome",
+        "Name": "SponsoredTopSites",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\FirefoxHome",
+        "Name": "SponsoredPocket",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\FirefoxSuggest",
+        "Name": "SponsoredSuggestions",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\UserMessaging",
+        "Name": "ExtensionRecommendations",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\UserMessaging",
+        "Name": "FeatureRecommendations",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\UserMessaging",
+        "Name": "MoreFromMozilla",
+        "Value": "0",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      },
+      {
+        "Path": "HKLM:\\SOFTWARE\\Policies\\Mozilla\\Firefox\\UserMessaging",
+        "Name": "SkipOnboarding",
+        "Value": "1",
+        "Type": "DWord",
+        "OriginalValue": "<RemoveEntry>"
+      }
+    ],
+    "link": "https://mozilla.github.io/policy-templates/"
+  },
   "WPFTweaksBraveDebloat": {
     "Content": "Brave Browser - Debloat",
     "Description": "Disables various annoyances like Brave Rewards, Leo AI, Crypto Wallet and VPN.",
