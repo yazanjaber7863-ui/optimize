@@ -269,6 +269,132 @@
         "winget": "Valve.Steam",
         "foss": false
     },
+    "epicgames": {
+        "category": "Games",
+        "choco": "epicgameslauncher",
+        "content": "Epic Games Launcher",
+        "description": "The Epic Games Launcher buys, installs and launches games from the Epic Games Store, including Fortnite and the weekly free games.",
+        "link": "https://store.epicgames.com/",
+        "winget": "EpicGames.EpicGamesLauncher",
+        "foss": false
+    },
+    "goggalaxy": {
+        "category": "Games",
+        "choco": "goggalaxy",
+        "content": "GOG Galaxy",
+        "description": "GOG Galaxy installs and launches DRM-free games from GOG, and can show your libraries from other stores in one place.",
+        "link": "https://www.gog.com/galaxy",
+        "winget": "GOG.Galaxy",
+        "foss": false
+    },
+    "eaapp": {
+        "category": "Games",
+        "choco": "ea-app",
+        "content": "EA app",
+        "description": "The EA app buys, installs and launches Electronic Arts games such as EA Sports FC and Battlefield.",
+        "link": "https://www.ea.com/ea-app",
+        "winget": "ElectronicArts.EADesktop",
+        "foss": false
+    },
+    "ubisoftconnect": {
+        "category": "Games",
+        "choco": "ubisoft-connect",
+        "content": "Ubisoft Connect",
+        "description": "Ubisoft Connect buys, installs and launches Ubisoft games such as Assassin's Creed and Rainbow Six.",
+        "link": "https://ubisoftconnect.com/",
+        "winget": "Ubisoft.Connect",
+        "foss": false
+    },
+    "playnite": {
+        "category": "Games",
+        "choco": "playnite",
+        "content": "Playnite",
+        "description": "Playnite puts the games from all your launchers (Steam, Epic, GOG, EA, Ubisoft and more) into one library.",
+        "link": "https://playnite.link/",
+        "winget": "Playnite.Playnite",
+        "foss": true
+    },
+    "chrome": {
+        "category": "Browsers",
+        "choco": "googlechrome",
+        "content": "Chrome",
+        "description": "Google Chrome is a fast web browser that syncs bookmarks, passwords and extensions with your Google account.",
+        "link": "https://www.google.com/chrome/",
+        "winget": "Google.Chrome",
+        "foss": false
+    },
+    "brave": {
+        "category": "Browsers",
+        "choco": "brave",
+        "content": "Brave",
+        "description": "Brave is a Chromium-based web browser that blocks ads and trackers by default.",
+        "link": "https://brave.com/download",
+        "winget": "Brave.Brave",
+        "foss": true
+    },
+    "zoom": {
+        "category": "Communications",
+        "choco": "zoom",
+        "content": "Zoom",
+        "description": "Zoom is a video meeting and calling app with screen sharing and chat.",
+        "link": "https://zoom.us/",
+        "winget": "Zoom.Zoom",
+        "foss": false
+    },
+    "notepadplusplus": {
+        "category": "Development",
+        "choco": "notepadplusplus",
+        "content": "Notepad++",
+        "description": "Notepad++ is a lightweight text and code editor with tabs, syntax highlighting and powerful search.",
+        "link": "https://notepad-plus-plus.org/",
+        "winget": "Notepad++.Notepad++",
+        "foss": true
+    },
+    "hwinfo": {
+        "category": "Pro Tools",
+        "choco": "hwinfo",
+        "content": "HWiNFO",
+        "description": "HWiNFO shows detailed hardware information and live sensor readings such as temperatures, voltages and fan speeds.",
+        "link": "https://www.hwinfo.com/",
+        "winget": "REALiX.HWiNFO",
+        "foss": false
+    },
+    "crystaldiskinfo": {
+        "category": "Pro Tools",
+        "choco": "crystaldiskinfo",
+        "content": "CrystalDiskInfo",
+        "description": "CrystalDiskInfo shows the health, temperature and S.M.A.R.T. data of your hard drives and SSDs.",
+        "link": "https://crystalmark.info/en/software/crystaldiskinfo/",
+        "winget": "CrystalDewWorld.CrystalDiskInfo",
+        "foss": true
+    },
+    "occt": {
+        "category": "Pro Tools",
+        "choco": "occt",
+        "content": "OCCT",
+        "description": "OCCT stress tests your CPU, graphics card, memory and power supply to check that a PC is stable. Free for personal use.",
+        "link": "https://www.ocbase.com/",
+        "winget": "OCBase.OCCT.Personal",
+        "foss": false
+    },
+    "filezilla": {
+        "category": "Utilities",
+        "choco": "filezilla",
+        "content": "FileZilla",
+        "description": "FileZilla transfers files to and from servers over FTP and SFTP. It is not on winget, so Optimize installs it with Chocolatey.",
+        "link": "https://filezilla-project.org/",
+        "winget": "na",
+        "foss": true
+    },
+    "winscp": {
+        "category": "Utilities",
+        "choco": "winscp",
+        "content": "WinSCP",
+        "description": "WinSCP transfers files to and from servers over SFTP, SCP and FTP, and can edit remote files directly.",
+        "link": "https://winscp.net/",
+        "winget": "WinSCP.WinSCP",
+        "foss": true
+    },
     "syncthing": {
         "category": "Selfhosted Tools",
         "choco": "syncthing",
