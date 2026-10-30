@@ -34,7 +34,9 @@ function Set-WinUtilDNS {
     }
 
     try {
-        $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up"}
+        # VPN adapters such as Tailscale set their own DNS (its names for your devices); writing
+        # over it breaks them, so they are left alone
+        $Adapters = Get-NetAdapter | Where-Object {$_.Status -eq "Up" -and "$($_.InterfaceDescription)" -notmatch 'Tailscale|WireGuard'}
         Write-Host "Ensuring DNS is set to $DNSProvider on the following interfaces:"
         Write-Host $($Adapters | Out-String)
         Write-WinUtilLog -Component "DNS" -Message "Setting DNS provider to $DNSProvider for $(@($Adapters).Count) active adapter(s)."
