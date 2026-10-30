@@ -34,7 +34,7 @@ function Invoke-WPFDiskHealth {
 
         if ($counters.Temperature -gt 0) {
             $tempStatus = if ($counters.Temperature -ge 70) { "Bad" } elseif ($counters.Temperature -ge 60) { "Warn" } else { "Good" }
-            $rows += @{ Label = "Temperature"; Value = "$($counters.Temperature) °C"; Status = $tempStatus }
+            $rows += @{ Label = "Temperature"; Value = "$($counters.Temperature) $([char]0xB0)C"; Status = $tempStatus }
         } else {
             $rows += @{ Label = "Temperature"; Value = "not reported" }
         }

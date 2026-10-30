@@ -29,7 +29,7 @@ function Invoke-WPFTemperatures {
             $status = if ($temperature -ge 85) { "Bad" } elseif ($temperature -ge 75) { "Warn" } else { "Good" }
             if ($status -ne "Good") { $hot++ }
             $rows += @{ Label = "GPU"; Value = $fields[0] }
-            $rows += @{ Label = "Temperature"; Value = "$temperature °C"; Status = $status }
+            $rows += @{ Label = "Temperature"; Value = "$temperature $([char]0xB0)C"; Status = $status }
             $rows += @{ Label = "Load"; Value = "$($fields[2])%" }
             $fan = if ($fields[3] -match '^\d+$') { if ([int]$fields[3] -eq 0) { "0% (fans stop when the card is cool, which is normal)" } else { "$($fields[3])%" } } else { "not reported" }
             $rows += @{ Label = "Fan"; Value = $fan }
@@ -37,7 +37,7 @@ function Invoke-WPFTemperatures {
             if ($index -lt $limits.Count -and "$($limits[$index])".Trim() -match '^-?\d+$') {
                 $headroom = [int]"$($limits[$index])".Trim()
                 $headroomStatus = if ($headroom -le 5) { "Bad" } elseif ($headroom -le 15) { "Warn" } else { "Good" }
-                $rows += @{ Label = "Before slowing down"; Value = "$headroom °C to go"; Status = $headroomStatus }
+                $rows += @{ Label = "Before slowing down"; Value = "$headroom $([char]0xB0)C to go"; Status = $headroomStatus }
             }
         }
         if ($lines.Count -eq 0) {
@@ -55,7 +55,7 @@ function Invoke-WPFTemperatures {
             $limit = if ($disk.MediaType -eq "HDD") { 50 } else { 70 }
             $status = if ($counters.Temperature -ge $limit) { "Bad" } elseif ($counters.Temperature -ge $limit - 10) { "Warn" } else { "Good" }
             if ($status -ne "Good") { $hot++ }
-            $rows += @{ Label = $name; Value = "$($counters.Temperature) °C"; Status = $status }
+            $rows += @{ Label = $name; Value = "$($counters.Temperature) $([char]0xB0)C"; Status = $status }
         } else {
             $rows += @{ Label = $name; Value = "not reported" }
         }
@@ -65,7 +65,7 @@ function Invoke-WPFTemperatures {
     $rows += @{ Label = "CPU"; Value = "Windows can't read it without an extra driver. HWiNFO or Core Temp show it." }
 
     $note = if ($hot -gt 0) {
-        "Something is running hot. Check that fans spin and vents aren't blocked; dust is the usual cause. Under a heavy game, a GPU in the 70s °C is normal."
+        "Something is running hot. Check that fans spin and vents aren't blocked; dust is the usual cause. Under a heavy game, a GPU in the 70s $([char]0xB0)C is normal."
     } else {
         "Everything is at a healthy temperature. Check again while gaming to see the temperatures under load."
     }
