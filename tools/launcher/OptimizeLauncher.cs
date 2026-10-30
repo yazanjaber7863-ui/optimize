@@ -1,8 +1,8 @@
 // Optimize.exe: a small launcher that carries the compiled winutil.ps1 inside it.
 //
 // The manifest asks Windows for admin rights when the exe is opened, so PowerShell starts
-// elevated and Optimize does not have to relaunch itself. The script is written to the temp
-// folder as winutil-<random>.ps1, the name Optimize already deletes when it closes.
+// elevated and Optimize does not have to relaunch itself. The script is written to
+// %LocalAppData%\Optimize\Optimize.ps1 and replaced on every start.
 //
 // Opened without arguments, it first checks GitHub for a newer release and offers to update
 // itself. BuildInfo.Version is written by Build-OptimizeExe.ps1.
@@ -42,7 +42,12 @@ static class Program
 
         try
         {
-            string script = Path.Combine(Path.GetTempPath(), "winutil-" + Guid.NewGuid().ToString("N") + ".ps1");
+            // A fixed, named place rather than a random file in Temp started minimized with
+            // Bypass: that pattern is what droppers do, and Defender's behaviour model removed
+            // the exe for it. RemoteSigned runs this locally written file and nothing downloaded.
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Optimize");
+            Directory.CreateDirectory(folder);
+            string script = Path.Combine(folder, "Optimize.ps1");
             using (Stream embedded = Assembly.GetExecutingAssembly().GetManifestResourceStream("winutil.ps1"))
             using (FileStream file = File.Create(script))
             {
@@ -52,10 +57,8 @@ static class Program
             ProcessStartInfo start = new ProcessStartInfo
             {
                 FileName = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe"),
-                Arguments = "-NoProfile -ExecutionPolicy Bypass -File \"" + script + "\"" + QuoteArguments(args),
+                Arguments = "-NoProfile -ExecutionPolicy RemoteSigned -File \"" + script + "\"" + QuoteArguments(args),
                 UseShellExecute = true,
-                // The log console stays reachable on the taskbar without covering the app
-                WindowStyle = ProcessWindowStyle.Minimized,
             };
             Process.Start(start);
             return 0;
