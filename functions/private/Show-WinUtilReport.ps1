@@ -8,7 +8,8 @@ function Show-WinUtilReport {
 
     .PARAMETER Rows
         Hashtables with Label and Value. A row with no Value is drawn as a section heading.
-        Status = "Good", "Warn" or "Bad" colours the value.
+        Status = "Good", "Warn" or "Bad" colours the value. Path makes the value a link that
+        opens that file or folder in File Explorer.
 
     .PARAMETER Note
         Optional text under the rows
@@ -34,7 +35,7 @@ function Show-WinUtilReport {
     }
 
     # Plain hashtables so the values cross into the interface runspace as data
-    $plainRows = @($Rows | ForEach-Object { @{ Label = "$($_.Label)"; Value = $(if ($null -eq $_.Value) { $null } else { "$($_.Value)" }); Status = "$($_.Status)" } })
+    $plainRows = @($Rows | ForEach-Object { @{ Label = "$($_.Label)"; Value = $(if ($null -eq $_.Value) { $null } else { "$($_.Value)" }); Status = "$($_.Status)"; Path = "$($_.Path)" } })
 
     Invoke-WPFUIThread -Parameters @{ Title = $Title; Rows = $plainRows; Note = $Note } -ScriptBlock {
         param($Title, $Rows, $Note)
@@ -106,6 +107,17 @@ function Show-WinUtilReport {
                     $value.FontWeight = "SemiBold"
                 } else {
                     $value.Foreground = $resources["MainForegroundColor"]
+                }
+                if ($row.Path) {
+                    # A row with a path opens it in File Explorer, with the item selected
+                    $value.Cursor = [Windows.Input.Cursors]::Hand
+                    $value.TextDecorations = [Windows.TextDecorations]::Underline
+                    $value.ToolTip = "Open in File Explorer"
+                    $value.Tag = $row.Path
+                    $value.Add_MouseLeftButtonUp({
+                        param($eventSender)
+                        Start-Process -FilePath "explorer.exe" -ArgumentList "/select,`"$($eventSender.Tag)`""
+                    })
                 }
                 [Windows.Controls.Grid]::SetRow($value, $rowIndex)
                 [Windows.Controls.Grid]::SetColumn($value, 1)

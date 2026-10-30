@@ -281,6 +281,96 @@
     "ButtonWidth": "300",
     "function": "Invoke-WPFRestoreDrivers"
   },
+  "WPFBackupWifi": {
+    "tab": "Backup",
+    "Content": "Backup Wi-Fi",
+    "Description": "Saves this PC's Wi-Fi networks and their passwords to a folder, so another PC or a fresh Windows connects straight away. The passwords in it are readable, so keep it private.",
+    "category": "Wi-Fi",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFBackupWifi"
+  },
+  "WPFRestoreWifi": {
+    "tab": "Backup",
+    "Content": "Restore Wi-Fi",
+    "Description": "Adds the Wi-Fi networks from a folder made by Backup Wi-Fi.",
+    "category": "Wi-Fi",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFRestoreWifi"
+  },
+  "WPFSaveSetup": {
+    "tab": "Backup",
+    "Content": "Save My Setup",
+    "Description": "Saves the apps, tweaks and features you have ticked to a file, and copies a one-line command that installs Optimize and applies it on another PC.",
+    "category": "Optimize Setup",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFSaveSetup"
+  },
+  "WPFLoadSetup": {
+    "tab": "Backup",
+    "Content": "Load My Setup",
+    "Description": "Ticks the apps, tweaks and features from a file made by Save My Setup. Nothing runs until you press Install or Run Tweaks.",
+    "category": "Optimize Setup",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFLoadSetup"
+  },
+  "WPFBigFiles": {
+    "tab": "Maintenance",
+    "Content": "Find Big Files",
+    "Description": "Asks which drive to scan, then lists the biggest folders and files on it. Click one to open it in File Explorer. Nothing is deleted.",
+    "category": "Clean Up",
+    "panel": "0",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFBigFiles"
+  },
+  "WPFSpeedTest": {
+    "tab": "Gaming",
+    "Content": "Speed Test",
+    "Description": "Measures your download and upload speed against Cloudflare's servers in about 12 seconds. Uses up to about 600 MB of data on a fast connection.",
+    "category": "Mouse & Network",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFSpeedTest"
+  },
+  "WPFLuaMacros": {
+    "tab": "Gaming",
+    "Content": "Install LuaMacros (Install / Remove)",
+    "Description": "LuaMacros turns a second keyboard, gamepad or macro pad into its own set of hotkeys with Lua scripts. It is not on winget or Chocolatey, so Optimize downloads the official zip and checks it before installing to Program Files. Click again to remove it.",
+    "category": "Mouse & Network",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFLuaMacros"
+  },
+  "WPFAdBlock": {
+    "tab": "Gaming",
+    "Content": "Block Ads Everywhere (On / Off)",
+    "Description": "Asks first, then blocks ads and trackers in every browser and app by switching DNS to AdGuard's free ad-blocking DNS. Click again to turn it off and get your old DNS back.",
+    "category": "Mouse & Network",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFAdBlock"
+  },
+  "WPFHealthCheckTask": {
+    "tab": "Health",
+    "Content": "Weekly Health Check (On / Off)",
+    "Description": "Asks first, then checks your drives, graphics card temperature, free space and Optimize's settings every Sunday, and shows a notification only if something needs attention.",
+    "category": "Health",
+    "panel": "1",
+    "Type": "Button",
+    "ButtonWidth": "300",
+    "function": "Invoke-WPFHealthCheckTask"
+  },
   "WPFShowChanges": {
     "tab": "Maintenance",
     "Content": "See What Optimize Changed",
