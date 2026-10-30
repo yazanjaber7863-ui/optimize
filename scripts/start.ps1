@@ -177,8 +177,17 @@ if (`$launch.ScriptPath) {
     return [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($bootstrap))
 }
 
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "Optimize needs to be run as Administrator. Attempting to relaunch."
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+# Windows' management modules (DISM: features, drivers) do not load in PowerShell 7, and not at
+# all in its Microsoft Store version, so Optimize always runs in Windows PowerShell 5.1
+$isPowerShell7 = $PSVersionTable.PSEdition -eq "Core"
+
+if (-not $isAdmin -or $isPowerShell7) {
+    if (-not $isAdmin) {
+        Write-Output "Optimize needs to be run as Administrator. Attempting to relaunch."
+    } else {
+        Write-Output "Optimize runs in Windows PowerShell, which every Windows PC has. Relaunching in it."
+    }
     $elevationParameters = @{}
     foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
         $elevationParameters[$parameter.Key] = if ($parameter.Value -is [switch]) {
@@ -188,7 +197,19 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         }
     }
 
-    $powershellCmd = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    $powershellCmd = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
+
+    # The relaunch should run this same code. Run from memory there is no file, so the code is
+    # saved as winutil-<guid>.ps1 in the temp folder, the name Optimize deletes when it closes.
+    # Only when the code cannot be seen (irm | iex) does the new process download the release.
+    $relaunchPath = $PSCommandPath
+    if (-not $relaunchPath) {
+        $ownCode = "$($MyInvocation.MyCommand.ScriptBlock)"
+        if ($ownCode -match 'function Invoke-WinUtilAutoRun') {
+            $relaunchPath = Join-Path ([IO.Path]::GetTempPath()) "winutil-$([guid]::NewGuid().ToString('N')).ps1"
+            [IO.File]::WriteAllText($relaunchPath, $ownCode, (New-Object Text.UTF8Encoding($false)))
+        }
+    }
 
     # A headless caller is waiting on this process for an outcome, so the elevated run has to be
     # waited on and its code handed back. A terminal tab is skipped for the same reason: the
@@ -197,7 +218,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
         # A declined UAC prompt throws, which would leave $elevated null and exit 0: the caller
         # waiting on this process would read that as a successful run
         try {
-            $elevationCommand = New-WinUtilElevationCommand -ScriptPath $PSCommandPath -Parameters $elevationParameters -Headless
+            $elevationCommand = New-WinUtilElevationCommand -ScriptPath $relaunchPath -Parameters $elevationParameters -Headless
             $elevated = Start-Process $powershellCmd -ArgumentList @("-ExecutionPolicy", "Bypass", "-NoProfile", "-EncodedCommand", $elevationCommand) -Verb RunAs -Wait -PassThru -ErrorAction Stop
         } catch {
             Write-Host "Elevation was declined or failed: $($_.Exception.Message)" -ForegroundColor Red
@@ -211,7 +232,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     }
 
     $processCmd = if (Get-Command wt.exe -ErrorAction SilentlyContinue) { "wt.exe" } else { "$powershellCmd" }
-    $elevationCommand = New-WinUtilElevationCommand -ScriptPath $PSCommandPath -Parameters $elevationParameters
+    $elevationCommand = New-WinUtilElevationCommand -ScriptPath $relaunchPath -Parameters $elevationParameters
 
     if ($processCmd -eq "wt.exe") {
         Start-Process $processCmd -ArgumentList "$powershellCmd -ExecutionPolicy Bypass -NoProfile -EncodedCommand $elevationCommand" -Verb RunAs
