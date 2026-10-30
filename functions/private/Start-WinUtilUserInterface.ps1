@@ -211,6 +211,7 @@ function Start-WinUtilUserInterface {
                 "I" { Invoke-WPFButton "WPFTab1BT"; $keyEventArgs.Handled = $true } # Navigate to Install tab and suppress Windows Warning Sound
                 "T" { Invoke-WPFButton "WPFTab2BT"; $keyEventArgs.Handled = $true } # Navigate to Tweaks tab
                 "C" { Invoke-WPFButton "WPFTab3BT"; $keyEventArgs.Handled = $true } # Navigate to Config tab
+                "W" { Invoke-WPFButton "WPFTab5BT"; $keyEventArgs.Handled = $true } # Navigate to Win11ISO tab
                 "H" { Invoke-WPFButton "WPFTab7BT"; $keyEventArgs.Handled = $true } # Navigate to Health tab
                 "G" { Invoke-WPFButton "WPFTab8BT"; $keyEventArgs.Handled = $true } # Navigate to Gaming tab
                 "M" { Invoke-WPFButton "WPFTab9BT"; $keyEventArgs.Handled = $true } # Navigate to Maintenance tab
@@ -498,6 +499,10 @@ Runspace : <a href="https://github.com/DeveloperDurp">@DeveloperDurp</a>, <a hre
 
     $sync["WPFWin11ISOModifyButton"].Add_Click({
         Invoke-WinUtilISOModify
+    })
+
+    $sync["WPFWin11ISOAddUpdatesButton"].Add_Click({
+        Invoke-WinUtilISOAddUpdates
     })
 
     $sync["WPFWin11ISOChooseISOButton"].Add_Click({

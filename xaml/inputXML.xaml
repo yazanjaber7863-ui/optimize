@@ -1127,7 +1127,7 @@
                     </ToggleButton.Content>
                 </ToggleButton>
                 <ToggleButton Style="{StaticResource TabToggleButton}" Margin="0,0,5,0" Height="{DynamicResource TabButtonHeight}" Width="Auto" MinWidth="{DynamicResource TabButtonWidth}"
-                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT" Visibility="Collapsed">
+                    Background="{DynamicResource ButtonWin11ISOBackgroundColor}" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}" FontWeight="Bold" Name="WPFTab5BT">
                     <ToggleButton.Content>
                         <TextBlock FontSize="{DynamicResource TabButtonFontSize}" Background="Transparent" Foreground="{DynamicResource ButtonWin11ISOForegroundColor}">
                             <Underline>W</Underline>in11 Creator
@@ -2004,6 +2004,82 @@
                                                       IsChecked="False"
                                                       Cursor="Hand"
                                                       ToolTip="Injects boot-storage drivers for Setup and adds exported drivers to the selected install.wim edition individually, skipping incompatible packages."/>
+                                            <CheckBox Name="WPFWin11ISOSingleEdition"
+                                                      Content="Keep only this edition (smaller ISO)"
+                                                      FontSize="{DynamicResource FontSize}"
+                                                      Foreground="{DynamicResource MainForegroundColor}"
+                                                      IsChecked="True"
+                                                      Cursor="Hand"
+                                                      Margin="0,8,0,0"
+                                                      ToolTip="Removes every other edition from the image, so the ISO is smaller and Setup cannot pick a different one."/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource Win11FormPanel}" Margin="0,0,0,16">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="Windows updates"/>
+                                            <Grid Margin="0,0,0,14">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" Name="WPFWin11ISOAddUpdatesButton" MinWidth="130"
+                                                        Style="{StaticResource Win11StepButton}" Tag="&#xE896;" Content="Add updates"
+                                                        ToolTip="Pick .msu or .cab update files downloaded from the Microsoft Update Catalog (catalog.update.microsoft.com). They are built into the image so a new install starts up to date."/>
+                                                <TextBlock Grid.Column="1" Name="WPFWin11ISOUpdatesInfo" Style="{StaticResource Win11StepBody}"
+                                                           Margin="12,0,0,0" VerticalAlignment="Center" Text="No updates added"/>
+                                            </Grid>
+
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="Remove from Windows"/>
+                                            <WrapPanel Margin="0,0,0,14">
+                                                <CheckBox Name="WPFWin11ISORemoveCopilot" Content="Copilot" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveWidgets" Content="Widgets" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveCortana" Content="Cortana" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveTeams" Content="Teams" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveOneDrive" Content="OneDrive" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveOutlook" Content="Outlook and Mail" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveBing" Content="News and Weather" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemovePhoneLink" Content="Phone Link" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveClipchamp" Content="Clipchamp" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveSolitaire" Content="Solitaire" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveFeedback" Content="Feedback Hub and Tips" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveMaps" Content="Maps" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISORemoveXbox" Content="Xbox apps" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"
+                                                          ToolTip="Also removes Game Bar and Xbox sign-in, which Game Pass and some games (such as Minecraft Bedrock) need."/>
+                                            </WrapPanel>
+
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="Turn on features"/>
+                                            <WrapPanel Margin="0,0,0,14">
+                                                <CheckBox Name="WPFWin11ISOFeatureNetFx3" Tag="NetFx3" Content=".NET 3.5" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"
+                                                          ToolTip="Needed by many older apps and games."/>
+                                                <CheckBox Name="WPFWin11ISOFeatureWSL" Tag="Microsoft-Windows-Subsystem-Linux,VirtualMachinePlatform" Content="WSL (Linux)" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"/>
+                                                <CheckBox Name="WPFWin11ISOFeatureSandbox" Tag="Containers-DisposableClientVM" Content="Windows Sandbox" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"
+                                                          ToolTip="Not available on Home editions."/>
+                                                <CheckBox Name="WPFWin11ISOFeatureHyperV" Tag="Microsoft-Hyper-V-All" Content="Hyper-V" Width="170" Margin="0,0,0,6" FontSize="{DynamicResource FontSize}" Foreground="{DynamicResource MainForegroundColor}" Cursor="Hand"
+                                                          ToolTip="Not available on Home editions."/>
+                                            </WrapPanel>
+
+                                            <TextBlock Style="{StaticResource Win11StepLabel}" Text="Optimize on first login"/>
+                                            <ComboBox Name="WPFWin11ISOPreset"
+                                                      FontSize="{DynamicResource FontSize}"
+                                                      Foreground="{DynamicResource MainForegroundColor}"
+                                                      Background="{DynamicResource MainBackgroundColor}"
+                                                      HorizontalAlignment="Stretch"
+                                                      Height="34"
+                                                      Margin="0,0,0,10"
+                                                      SelectedIndex="0"
+                                                      ToolTip="On first login the new install downloads Optimize and applies this preset, so it starts optimized. Needs an internet connection then.">
+                                                <ComboBoxItem Content="No tweaks"/>
+                                                <ComboBoxItem Content="Recommended"/>
+                                                <ComboBoxItem Content="MySetup"/>
+                                                <ComboBoxItem Content="Advanced"/>
+                                                <ComboBoxItem Content="FullSetup"/>
+                                            </ComboBox>
+                                            <CheckBox Name="WPFWin11ISOIncludeApps"
+                                                      Content="Also install the apps ticked on the Install tab"
+                                                      FontSize="{DynamicResource FontSize}"
+                                                      Foreground="{DynamicResource MainForegroundColor}"
+                                                      Cursor="Hand"/>
                                         </StackPanel>
                                     </Border>
 

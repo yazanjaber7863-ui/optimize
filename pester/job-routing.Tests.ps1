@@ -16,6 +16,8 @@ Describe "Work routing" {
             $text = Get-Content -Path $file.FullName -Raw
             foreach ($line in ($text -split "`r?`n")) {
                 if ($line -match '^\s*#') { continue }
+                # Text written into an ISO's setup scripts runs in the newly installed Windows, not in WinUtil
+                if ($line -match 'C:\\Windows\\Setup\\Scripts\\') { continue }
                 if ($line -match 'wt\s+new-tab') { $offenders += "$($file.Name): $($line.Trim())" }
                 if ($line -match 'Start-Process\s+.*(powershell|pwsh)\.exe' -and $line -notmatch '-NoNewWindow') {
                     $offenders += "$($file.Name): $($line.Trim())"

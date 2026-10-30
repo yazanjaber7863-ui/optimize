@@ -39,7 +39,8 @@ function Invoke-WinUtilISOScript {
         [string]$InstallImagePath = "",
         [int]$InstallImageIndex = 1,
         [scriptblock]$Log = { param($m) Write-Output $m },
-        [ref]$DriversInjected = [ref]$false
+        [ref]$DriversInjected = [ref]$false,
+        [string[]]$FirstLogonSelections = @()
     )
 
     function Add-WinUtilISOStagedDrivers {
@@ -495,7 +496,8 @@ Retail
         param (
             [Parameter(Mandatory)][string]$XmlContent,
             [Parameter(Mandatory)][int]$InstallImageIndex,
-            [scriptblock]$Logger
+            [scriptblock]$Logger,
+            [string[]]$FirstLogonSelections = @()
         )
 
         $appxPackages = @(
@@ -698,7 +700,51 @@ $appxList
         $postInstallFile.InnerText = $postInstallScript
         [void]$extensions.AppendChild($postInstallFile)
 
-        $firstLogonFile.InnerText = "& 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1';`r`n`r`n$($firstLogonFile.InnerText.Trim())"
+        $firstLogonText = "& 'C:\Windows\Setup\Scripts\WinUtil-PostInstall.ps1';"
+
+        if ($FirstLogonSelections.Count -gt 0) {
+            # Optimize itself applies the tweaks and installs the apps on first logon, so they
+            # behave exactly as from the app and land in its change journal. It is downloaded
+            # then, which also means the newest release is used.
+            $selectionsFile = $xmlDoc.CreateElement('File', $extensions.NamespaceURI)
+            $selectionsFile.SetAttribute('path', 'C:\Windows\Setup\Scripts\Optimize-FirstLogon.json')
+            $selectionsFile.InnerText = ConvertTo-Json -InputObject @($FirstLogonSelections) -Compress
+            [void]$extensions.AppendChild($selectionsFile)
+
+            $optimizeScript = @'
+$ErrorActionPreference = 'Continue'
+Start-Transcript -Path 'C:\Windows\Setup\Scripts\Optimize-FirstLogon.log' -Append -ErrorAction SilentlyContinue
+$host.UI.RawUI.WindowTitle = 'Optimize - setting up this PC'
+Write-Host 'Optimize is applying your tweaks and installing your apps. Leave this window open.' -ForegroundColor Cyan
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+$code = $null
+for ($try = 0; $try -lt 60 -and -not $code; $try++) {
+    try {
+        $code = Invoke-RestMethod -Uri 'https://github.com/yazanjaber7863-ui/optimize/releases/latest/download/winutil.ps1' -UseBasicParsing
+    } catch {
+        Write-Host 'Waiting for an internet connection...'
+        Start-Sleep -Seconds 10
+    }
+}
+if ($code) {
+    & ([ScriptBlock]::Create($code)) -Config 'C:\Windows\Setup\Scripts\Optimize-FirstLogon.json'
+} else {
+    Write-Host 'No internet connection after 10 minutes. Run Optimize yourself later to finish setting up.' -ForegroundColor Yellow
+}
+Stop-Transcript -ErrorAction SilentlyContinue
+Read-Host 'Done. Press Enter to close'
+'@
+            $optimizeFile = $xmlDoc.CreateElement('File', $extensions.NamespaceURI)
+            $optimizeFile.SetAttribute('path', 'C:\Windows\Setup\Scripts\Optimize-FirstLogon.ps1')
+            $optimizeFile.InnerText = $optimizeScript
+            [void]$extensions.AppendChild($optimizeFile)
+
+            # In its own window so the rest of first logon does not wait for app installs
+            $firstLogonText += "`r`nStart-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File C:\Windows\Setup\Scripts\Optimize-FirstLogon.ps1';"
+            $null = & $Logger "Optimize will apply $($FirstLogonSelections.Count) tweak(s) and app(s) on first logon."
+        }
+
+        $firstLogonFile.InnerText = "$firstLogonText`r`n`r`n$($firstLogonFile.InnerText.Trim())"
 
         $null = & $Logger 'Added WinUtil post-install AppX, registry, and scheduled-task customizations to autounattend.xml.'
         return $xmlDoc.OuterXml
@@ -756,7 +802,7 @@ $appxList
         throw "autounattend.xml content is required to prepare setup media."
     }
 
-    $preparedAutoUnattendXml = Add-WinUtilISOSetupCustomizations -XmlContent $AutoUnattendXml -InstallImageIndex $InstallImageIndex -Logger $Log
+    $preparedAutoUnattendXml = Add-WinUtilISOSetupCustomizations -XmlContent $AutoUnattendXml -InstallImageIndex $InstallImageIndex -Logger $Log -FirstLogonSelections $FirstLogonSelections
     $unattendPath = Join-Path $ISOContentsDir "autounattend.xml"
     [System.IO.File]::WriteAllText($unattendPath, $preparedAutoUnattendXml, [System.Text.UTF8Encoding]::new($false))
     & $Log "Written autounattend.xml with WinUtil setup customizations to ISO root ($unattendPath)."

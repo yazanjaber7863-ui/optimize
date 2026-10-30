@@ -154,6 +154,29 @@ function Invoke-WinUtilISOBrowse {
     Write-WinUtilISOLog "ISO selected: $isoPath  ($fileSizeGB GB)"
 }
 
+function Invoke-WinUtilISOAddUpdates {
+    <#
+    .SYNOPSIS
+        Picks the update files the Win11 Creator builds into the image
+    #>
+    Add-Type -AssemblyName System.Windows.Forms
+
+    $dlg = [System.Windows.Forms.OpenFileDialog]::new()
+    $dlg.Title       = "Select Windows updates (.msu or .cab) from the Microsoft Update Catalog"
+    $dlg.Filter      = "Windows updates (*.msu;*.cab)|*.msu;*.cab"
+    $dlg.Multiselect = $true
+    $dlg.InitialDirectory = [System.Environment]::GetFolderPath("UserProfile") + "\Downloads"
+
+    if ($dlg.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { return }
+
+    # Sorted by name so a servicing stack update (lower KB number) usually goes in before the
+    # cumulative update that needs it
+    $sync["Win11ISOUpdatePackages"] = @($dlg.FileNames | Sort-Object)
+    $names = @($sync["Win11ISOUpdatePackages"] | ForEach-Object { Split-Path $_ -Leaf })
+    $sync["WPFWin11ISOUpdatesInfo"].Text = "$($names.Count) update(s): $($names -join ', ')"
+    Write-WinUtilISOLog "Updates to add: $($names -join ', ')"
+}
+
 function Invoke-WinUtilISOMountAndVerify {
     $isoPath = $sync["WPFWin11ISOPath"].Text
 
@@ -334,6 +357,20 @@ function Invoke-WinUtilISOModify {
         $workDir = "$($workDir)_$(([guid]::NewGuid()).ToString('N').Substring(0, 8))"
     }
 
+    $removeComponents = @((Get-WinUtilISOComponents).Keys | Where-Object { $sync["WPFWin11ISORemove$_"].IsChecked -eq $true })
+    $features = @("NetFx3", "WSL", "Sandbox", "HyperV" | Where-Object { $sync["WPFWin11ISOFeature$_"].IsChecked -eq $true } |
+        ForEach-Object { $sync["WPFWin11ISOFeature$_"].Tag -split ',' })
+
+    $firstLogonSelections = @()
+    $presetName = [string]$sync["WPFWin11ISOPreset"].SelectedItem.Content
+    if ($sync.configs.preset.$presetName) {
+        $firstLogonSelections += @($sync.configs.preset.$presetName)
+    }
+    if ($sync["WPFWin11ISOIncludeApps"].IsChecked -eq $true) {
+        $firstLogonSelections += @($sync.selectedApps)
+    }
+    $firstLogonSelections = @($firstLogonSelections | Where-Object { $_ } | Select-Object -Unique)
+
     $autounattendContent = if ($WinUtilAutounattendXml) {
         $WinUtilAutounattendXml
     } else {
@@ -350,13 +387,22 @@ function Invoke-WinUtilISOModify {
         SelectedEditionName = $selectedEditionName
         AutounattendContent = $autounattendContent
         InjectDrivers       = $sync["WPFWin11ISOInjectDrivers"].IsChecked -eq $true
+        SingleEdition       = $sync["WPFWin11ISOSingleEdition"].IsChecked -eq $true
+        UpdatePackages      = @($sync["Win11ISOUpdatePackages"])
+        RemoveComponents    = $removeComponents
+        Features            = $features
+        FirstLogonSelections = $firstLogonSelections
     } -ScriptBlock {
-        param($isoPath, $DriveLetter, $WimPath, $workDir, $SelectedWimIndex, $SelectedEditionName, $AutounattendContent, $InjectDrivers)
+        param($isoPath, $DriveLetter, $WimPath, $workDir, $SelectedWimIndex, $SelectedEditionName, $AutounattendContent, $InjectDrivers,
+            $SingleEdition, $UpdatePackages, $RemoveComponents, $Features, $FirstLogonSelections)
+
+        $UpdatePackages = @($UpdatePackages | Where-Object { $_ })
+        $servicing = $SingleEdition -or $UpdatePackages.Count -gt 0 -or @($RemoveComponents).Count -gt 0 -or @($Features).Count -gt 0
 
         Invoke-WPFUIThread -ScriptBlock {
             $sync["WPFWin11ISOModifyButton"].IsEnabled = $false
         }
-        $workingLabel = if ($InjectDrivers) { "Modifying install.wim" } else { "Preparing setup media" }
+        $workingLabel = if ($InjectDrivers -or $servicing) { "Modifying install.wim" } else { "Preparing setup media" }
         Set-WinUtilISOStep -Step "Working" -Label $workingLabel
 
         $modified = $false
@@ -379,6 +425,29 @@ function Invoke-WinUtilISOModify {
                 throw "Copied ISO image file not found: sources\$sourceImageFileName"
             }
 
+            if ($servicing) {
+                Step-WinUtilJob -Status "Changing the Windows image..." -Percent 30
+                $serviced = Invoke-WinUtilISOServicing -ISOContentsDir $isoContents `
+                    -InstallImagePath $localWim `
+                    -InstallImageIndex $SelectedWimIndex `
+                    -SingleEdition $SingleEdition `
+                    -UpdatePackages $UpdatePackages `
+                    -RemoveComponents @($RemoveComponents) `
+                    -Features @($Features) `
+                    -Log {
+                        param($m)
+                        if ($m -like "Warning:*") {
+                            Write-WinUtilISOLog -Level "WARN" -Message $m -SkipSessionLog
+                            Write-Warning $m
+                        } else {
+                            Write-WinUtilISOLog $m
+                        }
+                    }
+                $localWim = $serviced.ImagePath
+                $SelectedWimIndex = $serviced.ImageIndex
+                $sourceImageFileName = Split-Path $localWim -Leaf
+            }
+
             Write-WinUtilISOLog "Writing autounattend.xml and edition selection..."
             $driversInjected = [ref]$false
             Invoke-WinUtilISOScript -ISOContentsDir $isoContents `
@@ -398,7 +467,8 @@ function Invoke-WinUtilISOModify {
                         Write-WinUtilISOLog $m
                     }
                 } `
-                -DriversInjected $driversInjected
+                -DriversInjected $driversInjected `
+                -FirstLogonSelections @($FirstLogonSelections)
 
             if ($driversInjected.Value) {
                 Step-WinUtilJob -Status "Finalizing install image..." -Percent 70
@@ -406,7 +476,7 @@ function Invoke-WinUtilISOModify {
             } elseif ($InjectDrivers) {
                 Step-WinUtilJob -Status "Preserving install image..." -Percent 70
                 Write-WinUtilISOLog "No current-system drivers were injected into $sourceImageFileName index $SelectedWimIndex; install.wim was left unchanged. Review the warning log entries for details."
-            } else {
+            } elseif (-not $servicing) {
                 Step-WinUtilJob -Status "Preserving install image..." -Percent 70
                 Write-WinUtilISOLog "Preserved the original $sourceImageFileName without mounting, exporting, or modifying it."
             }
@@ -593,6 +663,7 @@ function Invoke-WinUtilISOCleanAndReset {
             $sync["Win11ISOWimPath"]     = $null
             $sync["Win11ISOImageInfo"]   = $null
             $sync["Win11ISOUSBDisks"]    = $null
+            $sync["Win11ISOUpdatePackages"] = $null
 
             Invoke-WPFUIThread -ScriptBlock {
                 $sync["WPFWin11ISOPath"].Text                    = "No ISO selected..."
@@ -602,6 +673,7 @@ function Invoke-WinUtilISOCleanAndReset {
                 $sync["WPFWin11ISODonePanel"].Visibility         = "Collapsed"
                 $sync["WPFWin11ISOModifyButton"].IsEnabled       = $true
                 $sync["WPFWin11ISOStatusLog"].Text               = "Ready. Please select a Windows 11 ISO to begin."
+                $sync["WPFWin11ISOUpdatesInfo"].Text             = "No updates added"
                 Set-WinUtilISOStep -Step "Select"
             }
             Step-WinUtilJob -Hide
