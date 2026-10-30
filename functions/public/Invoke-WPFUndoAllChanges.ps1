@@ -25,6 +25,8 @@ function Invoke-WPFUndoAllChanges {
         return
     }
 
+    New-WinUtilAutoRestorePoint -Reason "undoing Optimize changes"
+
     # Scripts first, so the recorded values put back after them are what stays
     $ordered = @($changes | Where-Object { $_.Kind -eq "Tweak" } | Sort-Object LastChanged -Descending) +
         @($changes | Where-Object { $_.Kind -ne "Tweak" } | Sort-Object LastChanged -Descending)

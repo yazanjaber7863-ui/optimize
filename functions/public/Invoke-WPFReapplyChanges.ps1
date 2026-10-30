@@ -29,6 +29,8 @@ function Invoke-WPFReapplyChanges {
         return
     }
 
+    New-WinUtilAutoRestorePoint -Reason "reapplying Optimize changes"
+
     $done = 0
     $failed = 0
     $global:WinUtilJournalPaused = $true

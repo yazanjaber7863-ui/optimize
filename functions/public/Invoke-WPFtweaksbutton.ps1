@@ -38,6 +38,9 @@ function Invoke-WPFtweaksbutton {
         Invoke-WinUtilTweaks $restorePointTweak
       }
       $completedSteps = 1
+    } elseif ($tweaksToRun.Count -gt 0 -or $DnsProvider -ne "Default") {
+      # Made even when the Restore Point tweak is not ticked, once a day
+      New-WinUtilAutoRestorePoint -Reason "applying tweaks"
     }
 
     if ($DnsProvider -ne "Default") {
