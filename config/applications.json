@@ -89,6 +89,15 @@
         "winget": "TechPowerUp.GPU-Z",
         "foss": false
     },
+    "ollama": {
+        "category": "Pro Tools",
+        "choco": "ollama",
+        "content": "Ollama",
+        "description": "A tool for running large language models locally, suitable for developers and AI researchers.",
+        "link": "https://ollama.com/",
+        "winget": "Ollama.Ollama",
+        "foss": true
+    },
     "temurin21": {
         "category": "Development",
         "choco": "na",
