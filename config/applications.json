@@ -80,6 +80,15 @@
         "winget": "GitHub.cli",
         "foss": true
     },
+    "githubdesktop": {
+        "category": "Development",
+        "choco": "github-desktop",
+        "content": "GitHub Desktop",
+        "description": "A free and open-source Git client for Windows, designed for developers using GitHub.",
+        "link": "https://github.com/apps/desktop",
+        "winget": "GitHub.GitHubDesktop",
+        "foss": true
+    },
     "gpuz": {
         "category": "Pro Tools",
         "choco": "gpu-z",
