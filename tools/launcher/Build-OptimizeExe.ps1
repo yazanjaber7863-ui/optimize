@@ -79,6 +79,14 @@ try {
     $writer.Dispose()
 }
 
+# The exe hosts Windows PowerShell's engine, which lives in the GAC and is found there at run time
+$gac = Join-Path $env:SystemRoot "Microsoft.NET\assembly\GAC_MSIL"
+$automation = Get-ChildItem -Path (Join-Path $gac "System.Management.Automation") -Recurse -Filter "System.Management.Automation.dll" | Select-Object -First 1
+$consoleHost = Get-ChildItem -Path (Join-Path $gac "Microsoft.PowerShell.ConsoleHost") -Recurse -Filter "Microsoft.PowerShell.ConsoleHost.dll" | Select-Object -First 1
+if (-not $automation -or -not $consoleHost) {
+    throw "Windows PowerShell's assemblies were not found in $gac."
+}
+
 try {
     $arguments = @(
         "/nologo", "/target:winexe", "/optimize+",
@@ -87,6 +95,8 @@ try {
         "/win32manifest:$(Join-Path $PSScriptRoot 'Optimize.manifest')",
         "/resource:$ScriptPath,winutil.ps1",
         "/reference:System.Windows.Forms.dll",
+        "/reference:$($automation.FullName)",
+        "/reference:$($consoleHost.FullName)",
         (Join-Path $PSScriptRoot "OptimizeLauncher.cs"),
         $buildInfo
     )

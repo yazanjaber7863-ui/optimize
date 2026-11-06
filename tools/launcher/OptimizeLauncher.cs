@@ -2,7 +2,8 @@
 //
 // The manifest asks Windows for admin rights when the exe is opened, so PowerShell starts
 // elevated and Optimize does not have to relaunch itself. The script is written to
-// %LocalAppData%\Optimize\Optimize.ps1 and replaced on every start.
+// %LocalAppData%\Optimize\Optimize.ps1 and replaced on every start, then run by Windows
+// PowerShell's own engine hosted inside this exe, so no powershell.exe window or process exists.
 //
 // Opened without arguments, it first checks GitHub for a newer release and offers to update
 // itself. BuildInfo.Version is written by Build-OptimizeExe.ps1.
@@ -13,10 +14,12 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Management.Automation.Runspaces;
 using System.Reflection;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Microsoft.PowerShell;
 
 [assembly: AssemblyTitle("Optimize")]
 [assembly: AssemblyProduct("Optimize")]
@@ -27,6 +30,10 @@ using System.Windows.Forms;
 static class Program
 {
     const string LatestRelease = "https://api.github.com/repos/yazanjaber7863-ui/optimize/releases/latest";
+
+    [DllImport("kernel32.dll")] static extern bool AllocConsole();
+    [DllImport("kernel32.dll")] static extern IntPtr GetConsoleWindow();
+    [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr window, int command);
 
     [STAThread]
     static int Main(string[] args)
@@ -54,31 +61,32 @@ static class Program
                 embedded.CopyTo(file);
             }
 
-            ProcessStartInfo start = new ProcessStartInfo
+            // PowerShell runs inside this exe, so no powershell.exe process or window exists. It
+            // still needs a console to write to and to hand to programs it starts (winget, dism),
+            // or each of those would open a console window of its own. The console is hidden
+            // unless arguments were given: a preset or config run is headless, and its progress
+            // is worth seeing.
+            AllocConsole();
+            IntPtr console = GetConsoleWindow();
+            if (console != IntPtr.Zero && args.Length == 0)
             {
-                FileName = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe"),
-                Arguments = "-NoProfile -ExecutionPolicy RemoteSigned -File \"" + script + "\"" + QuoteArguments(args),
-                UseShellExecute = true,
-            };
-            Process.Start(start);
-            return 0;
+                ShowWindow(console, 0);
+            }
+
+            string[] shellArguments = new string[args.Length + 5];
+            shellArguments[0] = "-NoProfile";
+            shellArguments[1] = "-ExecutionPolicy";
+            shellArguments[2] = "RemoteSigned";
+            shellArguments[3] = "-File";
+            shellArguments[4] = script;
+            Array.Copy(args, 0, shellArguments, 5, args.Length);
+            return ConsoleShell.Start(RunspaceConfiguration.Create(), "", "", shellArguments);
         }
         catch (Exception error)
         {
             MessageBox.Show("Optimize could not start:\n\n" + error.Message, "Optimize", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
-    }
-
-    // Arguments such as -Preset MySetup are handed on, each quoted
-    static string QuoteArguments(string[] args)
-    {
-        StringBuilder quoted = new StringBuilder();
-        foreach (string arg in args)
-        {
-            quoted.Append(" \"").Append(arg.Replace("\"", "\\\"")).Append('"');
-        }
-        return quoted.ToString();
     }
 
     // Returns true when a newer exe was put in place and started, so this one should exit
