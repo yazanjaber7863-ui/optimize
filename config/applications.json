@@ -116,6 +116,15 @@
         "winget": "Modrinth.ModrinthApp",
         "foss": true
     },
+    "minecraftlauncher": {
+        "category": "Games",
+        "choco": "na",
+        "content": "Minecraft Launcher",
+        "description": "The official Minecraft Launcher from Mojang, for Minecraft: Java Edition and Bedrock Edition. Sign in with the Microsoft account that owns the game.",
+        "link": "https://www.minecraft.net/download",
+        "winget": "Mojang.MinecraftLauncher",
+        "foss": false
+    },
     "prismlauncher": {
         "category": "Games",
         "choco": "prismlauncher",
